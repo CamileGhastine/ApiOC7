@@ -17,11 +17,11 @@ class PhoneFixtures extends Fixture
 
 
         foreach ($brandModel as $brand => $model) {
-            for($i=1; $i <= 5 ; $i++) {
+            for ($i=1; $i <= 5 ; $i++) {
                 $phone = new Phone();
                 $phone->setBrand($brand)
-                    ->setModel($model.$i.(($brand == 'Huawei') ? '0' : '' ))
-                    ->setPrice(($i+rand(5,6))*100 + [49, 99][rand(0,1)])
+                    ->setModel($model.$i.(($brand == 'Huawei') ? '0' : ''))
+                    ->setPrice(($i+rand(5, 6))*100 + [49, 99][rand(0, 1)])
                     ->setDescription($faker->paragraph($nbSentences = 3, $variableNbSentences = true));
 
                 $manager->persist($phone);

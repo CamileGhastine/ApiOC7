@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Phone;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -19,22 +20,22 @@ class PhoneRepository extends ServiceEntityRepository
         parent::__construct($registry, Phone::class);
     }
 
-    // /**
-    //  * @return Phone[] Returns an array of Phone objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    /**
+     * @param $page
+     * @param $maxResult
+     * @return Paginator
+     */
+    public function findPhonePaginated(int $page, int $maxResult)
     {
-        return $this->createQueryBuilder('p')
-            ->andWhere('p.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('p.id', 'ASC')
-            ->setMaxResults(10)
+        $query = $this->createQueryBuilder('p')
+
+            ->setFirstResult(($page-1)*$maxResult)
+            ->setMaxResults($maxResult)
             ->getQuery()
-            ->getResult()
-        ;
+            ;
+
+        return new Paginator($query);
     }
-    */
 
     /*
     public function findOneBySomeField($value): ?Phone

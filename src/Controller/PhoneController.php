@@ -3,8 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Phone;
+use App\Repository\PhoneRepository;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -18,13 +20,13 @@ class PhoneController extends AbstractController
     /**
      * @Route("/phones", name="list_phone", methods={"GET"})
      */
-    public function index(SerializerInterface $serializer)
+    public function index(Request $request, PhoneRepository $phoneRepository, SerializerInterface $serializer)
     {
-        $phone = new Phone();
-        $phone->setBrand('Samsung')
-            ->setModel($phone->getBrand().' '.rand(1,9))
-            ->setPrice(rand(100,999))
-            ->setDescription("Un super téléphone pour téléphoner");
+        $page = (int)$request->query->get('page') > 1 ? (int)$request->query->get('page') : 1 ;
+
+        $phone = ($phoneRepository->findPhonePaginated($page, $this->getParameter('paginator.maxResult')))->getIterator();
+
+        if (strtolower($request->query->get('page')) === 'all') $phone = $phoneRepository->findAll();
 
         $data = $serializer->serialize($phone, 'json');
 
