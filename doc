@@ -1,5 +1,7 @@
 GET : /api/phones :
     - GET : /api/phones : return the first page of all phones
 
+    parameter "page" : pagination with 5 phones per page
     - GET : /api/phones?page=X (X is a number upper than 1) : return the page X of all phones
-    - GET : /api/phones?page=all : return all the phones in one single page
+    - GET : /api/phones?page=all : return all the phones in in the database
+    - with wrong parameter : return the first page of all phones

@@ -23,12 +23,14 @@ class PhoneController extends AbstractController
     public function index(Request $request, PhoneRepository $phoneRepository, SerializerInterface $serializer)
     {
         $page = (int)$request->query->get('page') > 1 ? (int)$request->query->get('page') : 1 ;
+        $maxResult = strtolower($request->query->get('page')) === 'all' ? null : $this->getParameter('paginator.maxResult');
+        $brand = $request->query->get('brand') ? $request->query->get('brand') : null;
 
-        $phone = ($phoneRepository->findPhonePaginated($page, $this->getParameter('paginator.maxResult')))->getIterator();
 
-        if (strtolower($request->query->get('page')) === 'all') $phone = $phoneRepository->findAll();
+        $phone = ($phoneRepository->findPhonePaginated($page, $maxResult, $brand));
 
-        $data = $serializer->serialize($phone, 'json');
+
+        $data = $serializer->serialize($phone->getIterator(), 'json');
 
         return new Response($data, Response::HTTP_OK, [
             'Content-Type' => 'application/json'
