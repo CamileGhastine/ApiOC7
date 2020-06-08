@@ -21,11 +21,14 @@ class CustomerController extends AbstractController
     /**
      * @Route("/customers", name="list_customer", methods={"GET"})
      */
-    public function index(CustomerRepository $customerRepository, SerializerInterface $serializer)
+    public function index(Request $request, CustomerRepository $customerRepository, SerializerInterface $serializer)
     {
-        $customer = $customerRepository->findAll();
+        $page = $request->query->get('page');
+        $maxResult = $request->query->get('page') ? $this->getParameter('paginator.maxResult') : null;
 
-        $data = $serializer->serialize($customer, 'json', SerializationContext::create()->setGroups(['list']));
+        $customer = $customerRepository->findCustomerPaginated($page, $maxResult);
+
+        $data = $serializer->serialize($customer->getIterator(), 'json', SerializationContext::create()->setGroups(['list']));
 
         return new Response($data, Response::HTTP_OK, [
             'Content-Type' => 'application/json'

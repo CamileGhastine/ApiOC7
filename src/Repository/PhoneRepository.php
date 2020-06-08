@@ -27,7 +27,7 @@ class PhoneRepository extends ServiceEntityRepository
      */
     public function findPhonePaginated(array $parameters)
     {
-        (extract($parameters));
+        extract($parameters);
 
         $query = $this->createQueryBuilder('p')
             ->setFirstResult(($page-1)*$maxResult)

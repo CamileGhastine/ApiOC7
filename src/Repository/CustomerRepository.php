@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Customer;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -17,6 +18,23 @@ class CustomerRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Customer::class);
+    }
+
+    /**
+     * @param $page
+     * @param $maxResult
+     *
+     * @return Paginator
+     */
+    public function findCustomerPaginated(?int $page, ?int $maxResult)
+    {
+        $query = $this->createQueryBuilder('p')
+            ->setFirstResult(($page-1)*$maxResult)
+            ->setMaxResults($maxResult)
+            ->orderBy('p.lastName', 'ASC')
+            ->getQuery();
+
+        return new Paginator($query);
     }
 
     // /**
