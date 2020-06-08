@@ -1,0 +1,20 @@
+GET : /api/phones :
+    - GET : /api/phones : return the first page of all phones
+
+    parameter "page" : pagination with 5 phones per page
+    - GET : /api/phones?page=X (X is a number upper than 1) : return the page X of all phones
+    - GET : /api/phones?page=all : return all the phones in in the database
+    - with wrong parameter : return the first page of all phones
+
+    parameter "brand" :
+    - GET : /api/phones?brand='Samasung : return the first page of Samsung phones
+
+    parameter "price" :
+    - GET : /api/phones?price=(Xmin, Xmax)(Xmin is the minimum price and Xmax the maximum price) : return the first page of the phone with a price between Xmin and Xmax
+    - GET : /api/phones?price=(Xmin)(Xmin is the minimum price) : return the first page of the phone with a price upper than Xmin
+    - GET : /api/phones?price=(0, Xmax)(Xmax is the maximum price) : return the first page of the phone with a price lower than Xmax
+
+    You can combine 2 or 3 parameters together
+    - GET : /api/phones?brand='Samasung'&page=2 : return the second page of Samsung phones
+    - GET : /api/phones?brand='Samasung'&page=all&price=(800, 1000) : return all the Samsung phones in the database with a price between 800€ and 1000€
+
