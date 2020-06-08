@@ -24,7 +24,7 @@ class ParametersRepositoryPreparator
      * @throws \Doctrine\ORM\NoResultException
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function prepareParametersPhone(Request $request, ?int $parameterMaxResult)
+    public function prepareParametersPhone(Request $request, ?int $parameterMaxResult) :array
     {
         $page = 1;
         $maxResult = null;
@@ -40,6 +40,11 @@ class ParametersRepositoryPreparator
         // Price
         if ($request->query->get('price') !== null) {
             $price = $this->preparePrice($request);
+        }
+
+        // Errors
+        if (is_array($page) || count($price) === 1) {
+            return $this->getErrors($page, $price);
         }
 
         return compact('page', 'maxResult', 'brand', 'price');
@@ -80,7 +85,7 @@ class ParametersRepositoryPreparator
      *
      * @return array|false|string[]
      */
-    private function preparePrice(Request $request)
+    private function preparePrice(Request $request) : array
     {
         // regex should be of type (minPrice) or (minPrice, maxPrice)
         if (!preg_match('#(^\[\d+( )?(,( )?\d+)?\])$#', $request->query->get('price'))) {
@@ -97,5 +102,30 @@ class ParametersRepositoryPreparator
 
         // $price = array (minPrice, maxPrice)
         return $price;
+    }
+
+    /**
+     * @param $page
+     * @param array $price
+     *
+     * @return array|string[]
+     */
+    private function getErrors($page, array $price)
+    {
+        if (!is_array($page)) {
+            return ['error' => [
+                'Erreur de formatage de prix' => $price['error']
+            ]];
+        }
+        if (count($price) !== 1) {
+            return ['error' => [
+                'Erreur de pagination' => $page['error'],
+            ]];
+        }
+
+        return ['error' => [
+            'Erreur de pagination' => $page['error'],
+            'Erreur de formatage de prix' => $price['error']
+        ]];
     }
 }

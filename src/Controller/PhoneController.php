@@ -9,6 +9,7 @@ use Exception;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -35,6 +36,16 @@ class PhoneController extends AbstractController
     public function index(Request $request, PhoneRepository $phoneRepository, SerializerInterface $serializer, ParametersRepositoryPreparator $preparator)
     {
         $parameters = $preparator->prepareParametersPhone($request, $this->getParameter('paginator.maxResult'));
+
+        // if $parameters have message errors
+        if (isset($parameters['error'])) {
+            $data = [
+                'status' => Response::HTTP_BAD_REQUEST,
+                'message' => $parameters['error']
+            ];
+
+            return new JsonResponse($data, Response::HTTP_BAD_REQUEST);
+        }
 
         $phone = $phoneRepository->findPhonePaginated($parameters);
 
