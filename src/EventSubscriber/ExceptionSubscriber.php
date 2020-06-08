@@ -3,18 +3,26 @@
 namespace App\EventSubscriber;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 
 class ExceptionSubscriber implements EventSubscriberInterface
 {
     public function onKernelException(ExceptionEvent $event)
     {
-        $exception = $event->getThrowable();
+        $data =[
+            'status' => 404,
+            'message' => 'La route demandée n\'existe pas.'
+        ];
 
-        $response = new Response($event->getThrowable()->getMessage(), $event->getThrowable()->getStatusCode(), [
-            'Content-Type' => 'application/json'
-        ]);
+        if (!$event->getThrowable()->getPrevious()) {
+            $data =[
+                'status' => 404,
+                'message' => 'La ressource n\'existe pas.'
+            ];
+        }
+
+        $response = new JsonResponse($data);
 
         $event->setResponse($response);
     }
