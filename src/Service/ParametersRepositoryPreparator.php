@@ -3,11 +3,16 @@
 
 namespace App\Service;
 
-
 use Symfony\Component\HttpFoundation\Request;
 
 class ParametersRepositoryPreparator
 {
+    /**
+     * @param Request $request
+     * @param int|null $maxResult
+     *
+     * @return array
+     */
     public function preparePhone(Request $request, ?int $maxResult)
     {
         $page = (int)$request->query->get('page') > 1 ? (int)$request->query->get('page') : 1 ;
@@ -19,7 +24,9 @@ class ParametersRepositoryPreparator
         // $price =array (minPrice, maxPrice)
         if ($request->query->get('price') && preg_match('#(^\(\d+( )?(,( )?\d+)?\))$#', $request->query->get('price'))) {
             $price = preg_split('/[\s,]+/', substr($request->query->get('price'), 1, -1));
-            if (count($price) == 1) $price[1] = 10000;
+            if (count($price) == 1) {
+                $price[1] = 10000;
+            }
         }
 
         return compact('page', 'maxResult', 'brand', 'price');

@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Phone;
 use App\Repository\PhoneRepository;
 use App\Service\ParametersRepositoryPreparator;
+use Exception;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,19 +25,36 @@ class PhoneController extends AbstractController
      * @param Request $request
      * @param PhoneRepository $phoneRepository
      * @param SerializerInterface $serializer
+     * @param ParametersRepositoryPreparator $preparator
+     *
      * @return Response
-     * @throws \Exception
+     *
+     * @throws Exception
      */
-    public function index(Request $request, PhoneRepository $phoneRepository, SerializerInterface $serializer,ParametersRepositoryPreparator $preparator)
+    public function index(Request $request, PhoneRepository $phoneRepository, SerializerInterface $serializer, ParametersRepositoryPreparator $preparator)
     {
         $parameters = $preparator->preparePhone($request, $this->getParameter('paginator.maxResult'));
-
 
         $phone = ($phoneRepository->findPhonePaginated($parameters));
 
         $data = $serializer->serialize($phone->getIterator(), 'json');
 
-//        dd(($data));
+        return new Response($data, Response::HTTP_OK, [
+            'Content-Type' => 'application/json'
+        ]);
+    }
+
+    /**
+     * @Route("/phones/{id}", name="show_phone", methods={"GET"})
+     *
+     * @param Phone $phone
+     * @param SerializerInterface $serializer
+     *
+     * @return Response
+     */
+    public function show(Phone $phone, SerializerInterface $serializer)
+    {
+        $data = $serializer->serialize($phone, 'json');
 
         return new Response($data, Response::HTTP_OK, [
             'Content-Type' => 'application/json'

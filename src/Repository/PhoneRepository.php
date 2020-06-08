@@ -21,9 +21,7 @@ class PhoneRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param int $page
-     * @param int|null $maxResult
-     * @param string|null $sortBy
+     * @param array $parameters
      * @return Paginator
      */
     public function findPhonePaginated(array $parameters)
