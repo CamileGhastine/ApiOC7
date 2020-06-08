@@ -6,6 +6,7 @@ use App\Repository\CustomerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serializer;
 
 /**
  * @ORM\Entity(repositoryClass=CustomerRepository::class)
@@ -16,36 +17,43 @@ class Customer
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Serializer\Groups({"detail", "list"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Serializer\Groups({"detail", "list"})
      */
     private $email;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Serializer\Groups({"detail", "list"})
      */
     private $firstName;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Serializer\Groups({"detail", "list"})
      */
     private $lastName;
 
     /**
      * @ORM\Column(type="text")
+     * @Serializer\Groups({"detail", "list"})
      */
     private $adress;
 
     /**
      * @ORM\Column(type="integer")
+     * @Serializer\Groups({"detail", "list"})
      */
-    private $postalCode;
+    private $postCode;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Serializer\Groups({"detail", "list"})
      */
     private $city;
 
@@ -54,9 +62,16 @@ class Customer
      */
     private $phones;
 
+    private $numberOfPurchases;
+
     public function __construct()
     {
         $this->phones = new ArrayCollection();
+    }
+
+    public function getNumberOfPurchases()
+    {
+        $this->numberOfPurchases = count($this->getPhones());
     }
 
     public function getId(): ?int
@@ -112,14 +127,14 @@ class Customer
         return $this;
     }
 
-    public function getPostalCode(): ?int
+    public function getPostCode(): ?int
     {
-        return $this->postalCode;
+        return $this->postCode;
     }
 
-    public function setPostalCode(int $postalCode): self
+    public function setPostCode(int $postCode): self
     {
-        $this->postalCode = $postalCode;
+        $this->postCode = $postCode;
 
         return $this;
     }
