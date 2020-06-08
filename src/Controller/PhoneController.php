@@ -34,9 +34,9 @@ class PhoneController extends AbstractController
      */
     public function index(Request $request, PhoneRepository $phoneRepository, SerializerInterface $serializer, ParametersRepositoryPreparator $preparator)
     {
-        $parameters = $preparator->preparePhone($request, $this->getParameter('paginator.maxResult'));
+        $parameters = $preparator->prepareParametersPhone($request, $this->getParameter('paginator.maxResult'));
 
-        $phone = ($phoneRepository->findPhonePaginated($parameters));
+        $phone = $phoneRepository->findPhonePaginated($parameters);
 
         $data = $serializer->serialize($phone->getIterator(), 'json', SerializationContext::create()->setGroups(['list']));
 

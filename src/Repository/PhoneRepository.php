@@ -22,11 +22,12 @@ class PhoneRepository extends ServiceEntityRepository
 
     /**
      * @param array $parameters
+     *
      * @return Paginator
      */
     public function findPhonePaginated(array $parameters)
     {
-        extract($parameters);
+        (extract($parameters));
 
         $query = $this->createQueryBuilder('p')
             ->setFirstResult(($page-1)*$maxResult)
@@ -41,12 +42,37 @@ class PhoneRepository extends ServiceEntityRepository
         if ($brand) {
             $query->andwhere('p.brand = :val')
                 ->setParameter('val', $brand)
-                ;
+            ;
         }
 
         $query->getQuery();
 
         return new Paginator($query);
+    }
+
+    /**
+     * @param string|null $brand
+     *
+     * @return int|mixed|string
+     *
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function countAll(?string $brand)
+    {
+        $query = $this->createQueryBuilder('p');
+
+        if ($brand) {
+            $query->andwhere('p.brand = :val')
+                ->setParameter('val', $brand)
+            ;
+        }
+
+        return $query
+            ->select('COUNT(p)')
+            ->getQuery()
+            ->getSingleScalarResult()
+        ;
     }
 
     /*
