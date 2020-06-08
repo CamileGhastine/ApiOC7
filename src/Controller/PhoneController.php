@@ -6,6 +6,7 @@ use App\Entity\Phone;
 use App\Repository\PhoneRepository;
 use App\Service\ParametersRepositoryPreparator;
 use Exception;
+use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -37,7 +38,7 @@ class PhoneController extends AbstractController
 
         $phone = ($phoneRepository->findPhonePaginated($parameters));
 
-        $data = $serializer->serialize($phone->getIterator(), 'json');
+        $data = $serializer->serialize($phone->getIterator(), 'json', SerializationContext::create()->setGroups(['list']));
 
         return new Response($data, Response::HTTP_OK, [
             'Content-Type' => 'application/json'
@@ -45,7 +46,7 @@ class PhoneController extends AbstractController
     }
 
     /**
-     * @Route("/phones/{id}", name="show_phone", methods={"GET"})
+     * @Route("/phones/{id<\d+>}", name="show_phone", methods={"GET"})
      *
      * @param Phone $phone
      * @param SerializerInterface $serializer
@@ -54,7 +55,7 @@ class PhoneController extends AbstractController
      */
     public function show(Phone $phone, SerializerInterface $serializer)
     {
-        $data = $serializer->serialize($phone, 'json');
+        $data = $serializer->serialize($phone, 'json', SerializationContext::create()->setGroups(['detail']));
 
         return new Response($data, Response::HTTP_OK, [
             'Content-Type' => 'application/json'
