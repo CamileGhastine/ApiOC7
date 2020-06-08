@@ -21,19 +21,25 @@ class PhoneRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param $page
-     * @param $maxResult
+     * @param int $page
+     * @param int|null $maxResult
+     * @param string|null $sortBy
      * @return Paginator
      */
-    public function findPhonePaginated(int $page, ?int $maxResult, ?string $sortBy)
+    public function findPhonePaginated(int $page, ?int $maxResult, ?string $sortBy, array $price)
     {
         $query = $this->createQueryBuilder('p')
             ->setFirstResult(($page-1)*$maxResult)
             ->setMaxResults($maxResult)
-            ;
+            ->Where('p.price >= :minVal')
+            ->setParameter('minVal', $price[0])
+            ->andWhere('p.price <= :maxVal')
+            ->setParameter('maxVal', $price[1])
+            ->orderBy('p.price', 'ASC')
+        ;
 
         if ($sortBy) {
-            $query->where('p.brand = :val')
+            $query->andwhere('p.brand = :val')
                 ->setParameter('val', $sortBy)
                 ;
         }
