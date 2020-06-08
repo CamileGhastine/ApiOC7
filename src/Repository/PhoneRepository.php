@@ -26,8 +26,10 @@ class PhoneRepository extends ServiceEntityRepository
      * @param string|null $sortBy
      * @return Paginator
      */
-    public function findPhonePaginated(int $page, ?int $maxResult, ?string $sortBy, array $price)
+    public function findPhonePaginated(array $parameters)
     {
+        extract($parameters);
+
         $query = $this->createQueryBuilder('p')
             ->setFirstResult(($page-1)*$maxResult)
             ->setMaxResults($maxResult)
@@ -38,9 +40,9 @@ class PhoneRepository extends ServiceEntityRepository
             ->orderBy('p.price', 'ASC')
         ;
 
-        if ($sortBy) {
+        if ($brand) {
             $query->andwhere('p.brand = :val')
-                ->setParameter('val', $sortBy)
+                ->setParameter('val', $brand)
                 ;
         }
 

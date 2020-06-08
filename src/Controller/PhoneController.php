@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Phone;
 use App\Repository\PhoneRepository;
+use App\Service\ParametersRepositoryPreparator;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,23 +27,16 @@ class PhoneController extends AbstractController
      * @return Response
      * @throws \Exception
      */
-    public function index(Request $request, PhoneRepository $phoneRepository, SerializerInterface $serializer)
+    public function index(Request $request, PhoneRepository $phoneRepository, SerializerInterface $serializer,ParametersRepositoryPreparator $preparator)
     {
-        $page = (int)$request->query->get('page') > 1 ? (int)$request->query->get('page') : 1 ;
-        $maxResult = strtolower($request->query->get('page')) === 'all' ? null : $this->getParameter('paginator.maxResult');
-        $brand = $request->query->get('brand') ? $request->query->get('brand') : null;
-        $price = [0, 10000];
+        $parameters = $preparator->preparePhone($request, $this->getParameter('paginator.maxResult'));
 
-        // regex should be of type (minPrice) or (minPrice, maxPrice)
-        // $price =array (minPrice, maxPrice)
-        if ($request->query->get('price') && preg_match('#(^\(\d+( )?(,( )?\d+)?\))$#', $request->query->get('price'))) {
-            $price = preg_split('/[\s,]+/', substr($request->query->get('price'), 1, -1));
-            if (count($price) == 1) $price[1] = 10000;
-        }
 
-        $phone = ($phoneRepository->findPhonePaginated($page, $maxResult, $brand, $price));
+        $phone = ($phoneRepository->findPhonePaginated($parameters));
 
         $data = $serializer->serialize($phone->getIterator(), 'json');
+
+//        dd(($data));
 
         return new Response($data, Response::HTTP_OK, [
             'Content-Type' => 'application/json'
