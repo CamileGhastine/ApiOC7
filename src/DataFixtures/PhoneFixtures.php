@@ -17,7 +17,7 @@ class PhoneFixtures extends Fixture
 
 
         foreach ($brandModel as $brand => $model) {
-            for ($i=1; $i <= 5 ; $i++) {
+            for ($i=1; $i <= rand(5, 9) ; $i++) {
                 $phone = new Phone();
                 $phone->setBrand($brand)
                     ->setModel($model.$i.(($brand == 'Huawei') ? '0' : ''))
