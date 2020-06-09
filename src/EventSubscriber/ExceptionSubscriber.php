@@ -9,6 +9,9 @@ use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 
 class ExceptionSubscriber implements EventSubscriberInterface
 {
+    /**
+     * @param ExceptionEvent $event
+     */
     public function onKernelException(ExceptionEvent $event)
     {
         $data =[
@@ -28,6 +31,9 @@ class ExceptionSubscriber implements EventSubscriberInterface
         $event->setResponse($response);
     }
 
+    /**
+     * @return array|string[]
+     */
     public static function getSubscribedEvents()
     {
         return [

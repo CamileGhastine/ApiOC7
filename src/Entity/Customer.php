@@ -63,16 +63,9 @@ class Customer
      */
     private $phones;
 
-    private $numberOfPurchases;
-
     public function __construct()
     {
         $this->phones = new ArrayCollection();
-    }
-
-    public function getNumberOfPurchases()
-    {
-        $this->numberOfPurchases = count($this->getPhones());
     }
 
     public function getId(): ?int

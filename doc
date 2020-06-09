@@ -1,8 +1,7 @@
-GET : /api/phones :
-    - GET : /api/phones : return all phones
+GET : /api/phones : return all phones
 
     parameter "page" : pagination with 5 phones per page
-    - GET : /api/phones?page=X (X is a number upper than 1) : return the page X of all phones
+    - GET : /api/phones?page=X (X is a number upper than 0) : return the page X of all phones
     - (tips) GET : /api/phones?page : return the first page of all phones
 
 
@@ -17,4 +16,23 @@ GET : /api/phones :
     You can combine 2 or 3 parameters together
     - GET : /api/phones?brand='Samsung'&page=2 : return the second page of Samsung phones
     - GET : /api/phones?brand='Samsung'&page=1&price=[800, 1000] : return the first page of Samsung phones with a price between 800€ and 1000€
+
+
+GET : /api/phones/{id} : Return Details of the phone with the id={id}
+
+
+GET : /api/customers :
+    - GET : /api/customers : return all customers
+
+    parameter "page" : pagination with 5 customer per page
+    - GET : /api/phones?page=X (X is a number upper than 0) : return the page X of all customers
+    - (tips) GET : /api/phones?page : return the first page of all customers
+
+
+GET : /api/customers/{id} : Return Details of the customer with the id={id}
+
+
+
+
+
 

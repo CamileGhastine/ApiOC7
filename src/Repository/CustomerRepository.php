@@ -4,6 +4,8 @@ namespace App\Repository;
 
 use App\Entity\Customer;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -21,8 +23,7 @@ class CustomerRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param $page
-     * @param $maxResult
+     * @param array $parameters
      *
      * @return Paginator
      */
@@ -42,8 +43,8 @@ class CustomerRepository extends ServiceEntityRepository
     /**
      * @return int|mixed|string
      *
-     * @throws \Doctrine\ORM\NoResultException
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws NoResultException
+     * @throws NonUniqueResultException
      */
     public function countAll()
     {

@@ -5,6 +5,9 @@ namespace App\Controller;
 use App\Entity\Customer;
 use App\Repository\CustomerRepository;
 use App\Service\ParametersRepositoryPreparator;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
+use Exception;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -22,6 +25,16 @@ class CustomerController extends AbstractController
 {
     /**
      * @Route("/customers", name="list_customer", methods={"GET"})
+     * @param Request $request
+     * @param CustomerRepository $customerRepository
+     * @param SerializerInterface $serializer
+     * @param ParametersRepositoryPreparator $preparator
+     *
+     * @return JsonResponse|Response
+     *
+     * @throws NoResultException
+     * @throws NonUniqueResultException
+     * @throws Exception
      */
     public function index(Request $request, CustomerRepository $customerRepository, SerializerInterface $serializer, ParametersRepositoryPreparator $preparator)
     {
@@ -48,6 +61,11 @@ class CustomerController extends AbstractController
 
     /**
      * @Route("/customers/{id<\d+>}", name="show_customer", methods={"GET"})
+     *
+     * @param Customer $customer
+     * @param SerializerInterface $serializer
+     *
+     * @return Response
      */
     public function show(Customer $customer, SerializerInterface $serializer)
     {
