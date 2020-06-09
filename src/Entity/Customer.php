@@ -7,9 +7,12 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=CustomerRepository::class)
+ * @UniqueEntity("email")
  */
 class Customer
 {
@@ -24,36 +27,71 @@ class Customer
     /**
      * @ORM\Column(type="string", length=255)
      * @Serializer\Groups({"detail", "list"})
+     * @Assert\Email
      */
     private $email;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Serializer\Groups({"detail", "list"})
+     * @Assert\NotBlank(message= "Le champs prénom ne peut pas être vide.")
+     * @Assert\Length(
+     *      min = 2,
+     *      max = 50,
+     *      minMessage = "Le prénom doit comporter au moins {{ limit }} charactères",
+     *      maxMessage = "Le prénom doit comporter au plus {{ limit }} charactères",
+     *      allowEmptyString = false
+     * )
      */
     private $firstName;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Serializer\Groups({"detail", "list"})
+     * @Assert\NotBlank(message= "Le champs nom ne peut pas être vide.")
+     * @Assert\Length(
+     *      min = 2,
+     *      max = 50,
+     *      minMessage = "Le nom doit comporter au moins {{ limit }} charactères",
+     *      maxMessage = "Le nom doit comporter au plus {{ limit }} charactères",
+     *      allowEmptyString = false
+     * )
      */
     private $lastName;
 
     /**
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="string", length=255)
      * @Serializer\Groups({"detail", "list"})
+     * @Assert\NotBlank(message= "Le champs adresse ne peut pas être vide.")
+     * @Assert\Length(
+     *      min = 2,
+     *      max = 255,
+     *      minMessage = "L\'adresse doit comporter au moins {{ limit }} charactères",
+     *      maxMessage = "L\'adresse doit comporter au plus {{ limit }} charactères",
+     *      allowEmptyString = false
+     * )
      */
     private $adress;
 
     /**
      * @ORM\Column(type="integer")
      * @Serializer\Groups({"detail", "list"})
+     * @Assert\NotBlank(message= "Le champs code postal ne peut pas être vide.")
+     * @Assert\Regex("/^(\d+)$/", message = "Le champs code postal n\'est pas au bon format")
      */
     private $postCode;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Serializer\Groups({"detail", "list"})
+     * @Assert\NotBlank(message= "Le champs ville ne peut pas être vide.")
+     * @Assert\Length(
+     *      min = 2,
+     *      max = 50,
+     *      minMessage = "La ville doit comporter au moins {{ limit }} charactères",
+     *      maxMessage = "La ville doit comporter au plus {{ limit }} charactères",
+     *      allowEmptyString = false
+     * )
      */
     private $city;
 

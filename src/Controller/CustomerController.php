@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * Class CustomerController
@@ -80,9 +81,19 @@ class CustomerController extends AbstractController
     /**
      * @Route("/customers", name="add_customers", methods={"POST"})
      */
-    public function new(Request $request, SerializerInterface $serializer, EntityManagerInterface $em)
+    public function new(Request $request, SerializerInterface $serializer, EntityManagerInterface $em, ValidatorInterface $validator)
     {
         $customer = $serializer->deserialize($request->getContent(), Customer::class, 'json');
+
+        $errors = $validator->validate($customer);
+
+        if (count($errors)) {
+            $data = $serializer->serialize($errors, 'json');
+
+            return new Response($data, Response::HTTP_REQUESTED_RANGE_NOT_SATISFIABLE, [
+                'Content-Type' => 'application/json'
+            ]);
+        }
 
         $em->persist($customer);
         $em->flush();
