@@ -26,9 +26,8 @@ class PhoneFixtures extends Fixture
                     ->setModel($model.$i.(($brand == 'Huawei') ? '0' : ''))
                     ->setPrice(($i+rand(5, 6))*100 + [49, 99][rand(0, 1)])
                     ->setDescription($faker->paragraph($nbSentences = 3, $variableNbSentences = true));
-                if ($i <= 5) {
-                    $this->addReference('phone'.($j+$i), $phone);
-                }
+
+                $this->setReference('phone'.($j+$i), $phone);
 
                 $manager->persist($phone);
             }
