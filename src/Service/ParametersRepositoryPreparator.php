@@ -94,7 +94,7 @@ class ParametersRepositoryPreparator
      * @param array|null $price
      * @param bool $customer
      *
-     * @return false|float|int|string[]
+     * @return int|string[]
      *
      * @throws NoResultException
      * @throws NonUniqueResultException
@@ -103,22 +103,17 @@ class ParametersRepositoryPreparator
     {
         if (!empty($this->queryPage) && !preg_match('#(^-?(\d+))$#', $this->queryPage)) {
             return $page = [
-                'error' => 'La page demandée doit être un nombre !'
+                'error' => 'La page demandée doit être un nombre entier !'
             ];
         }
 
         $page = (int)$this->queryPage > 1 ? (int)$this->queryPage : 1 ;
 
-        if ($this->queryPage > 0 && preg_match('#(^-?(\d+))$#', $this->queryPage)) {
-            $count =  $this->countAll($brand, $price, $customer)/$maxResult;
-            if ((int)$this->queryPage > $count) {
-                $page = (int)ceil($count);
-            }
-        }
+        $count =  $this->countAll($brand, $price, $customer);
 
-        if ($page === 0) {
-            $page = 1;
-        }
+        if ($page > $count/$maxResult) $page = (int)ceil($count/$maxResult);
+
+        if ($page === 0) $page = 1;
 
         return $page;
     }
