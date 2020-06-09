@@ -45,4 +45,16 @@ class CustomerController extends AbstractController
             'Content-Type' => 'application/json'
         ]);
     }
+
+    /**
+     * @Route("/customers/{id<\d+>}", name="show_customer", methods={"GET"})
+     */
+    public function show(Customer $customer, SerializerInterface $serializer)
+    {
+        $data = $serializer->serialize($customer, 'json', SerializationContext::create()->setGroups(['detail']));
+
+        return new Response($data, Response::HTTP_OK, [
+            'Content-Type' => 'application/json'
+        ]);
+    }
 }

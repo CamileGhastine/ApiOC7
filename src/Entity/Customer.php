@@ -59,6 +59,7 @@ class Customer
 
     /**
      * @ORM\ManyToMany(targetEntity=Phone::class, inversedBy="customers")
+     * @Serializer\Groups({"detail"})
      */
     private $phones;
 
