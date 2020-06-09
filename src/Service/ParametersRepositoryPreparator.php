@@ -111,9 +111,13 @@ class ParametersRepositoryPreparator
 
         $count =  $this->countAll($brand, $price, $customer);
 
-        if ($page > $count/$maxResult) $page = (int)ceil($count/$maxResult);
+        if ($page > $count/$maxResult) {
+            $page = (int)ceil($count/$maxResult);
+        }
 
-        if ($page === 0) $page = 1;
+        if ($page === 0) {
+            $page = 1;
+        }
 
         return $page;
     }

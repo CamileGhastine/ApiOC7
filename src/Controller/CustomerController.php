@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Customer;
 use App\Repository\CustomerRepository;
 use App\Service\ParametersRepositoryPreparator;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Exception;
@@ -72,6 +73,21 @@ class CustomerController extends AbstractController
         $data = $serializer->serialize($customer, 'json', SerializationContext::create()->setGroups(['detail']));
 
         return new Response($data, Response::HTTP_OK, [
+            'Content-Type' => 'application/json'
+        ]);
+    }
+
+    /**
+     * @Route("/customers", name="add_customers", methods={"POST"})
+     */
+    public function new(Request $request, SerializerInterface $serializer, EntityManagerInterface $em)
+    {
+        $customer = $serializer->deserialize($request->getContent(), Customer::class, 'json');
+
+        $em->persist($customer);
+        $em->flush();
+
+        return new Response('Le client a été ajouté avec succès !', Response::HTTP_CREATED, [
             'Content-Type' => 'application/json'
         ]);
     }
