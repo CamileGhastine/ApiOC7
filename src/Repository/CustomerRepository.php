@@ -26,15 +26,32 @@ class CustomerRepository extends ServiceEntityRepository
      *
      * @return Paginator
      */
-    public function findCustomerPaginated(?int $page, ?int $maxResult)
+    public function findCustomerPaginated(array $parameters)
     {
+        extract($parameters);
+
         $query = $this->createQueryBuilder('p')
             ->setFirstResult(($page-1)*$maxResult)
             ->setMaxResults($maxResult)
-            ->orderBy('p.lastName', 'ASC')
+            ->orderBy('p.id', 'ASC')
             ->getQuery();
 
         return new Paginator($query);
+    }
+
+    /**
+     * @return int|mixed|string
+     *
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function countAll()
+    {
+        return $query = $this->createQueryBuilder('c')
+            ->select('COUNT(c)')
+            ->getQuery()
+            ->getSingleScalarResult()
+            ;
     }
 
     // /**
