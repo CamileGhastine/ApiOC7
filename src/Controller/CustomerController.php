@@ -27,6 +27,7 @@ class CustomerController extends AbstractController
 {
     /**
      * @Route("/customers", name="list_customer", methods={"GET"})
+     *
      * @param Request $request
      * @param CustomerRepository $customerRepository
      * @param SerializerInterface $serializer
@@ -80,6 +81,13 @@ class CustomerController extends AbstractController
 
     /**
      * @Route("/customers", name="add_customers", methods={"POST"})
+     *
+     * @param Request $request
+     * @param SerializerInterface $serializer
+     * @param EntityManagerInterface $em
+     * @param ValidatorInterface $validator
+     *
+     * @return Response
      */
     public function new(Request $request, SerializerInterface $serializer, EntityManagerInterface $em, ValidatorInterface $validator)
     {
@@ -103,4 +111,43 @@ class CustomerController extends AbstractController
         ]);
     }
 
+    /**
+     * @Route("/customers/{id<\d+>}", name="update_customer", methods={"PUT"})
+     *
+     * @param Customer $customer
+     * @param Request $request
+     * @param SerializerInterface $serializer
+     * @param ValidatorInterface $validator
+     * @param EntityManagerInterface $em
+     *
+     * @return Response
+     */
+    public function update(Customer $customer, Request $request, SerializerInterface $serializer, ValidatorInterface $validator, EntityManagerInterface $em)
+    {
+        $data = json_decode($request->getContent());
+
+        foreach ($data as $key => $value) {
+            $setter = 'set'.ucfirst($key);
+
+            if (method_exists($customer, $setter)) {
+                $customer->$setter($value);
+            }
+        }
+
+        $errors = $validator->validate($customer);
+
+        if (count($errors)) {
+            $data = $serializer->serialize($errors, 'json');
+
+            return new Response($data, Response::HTTP_REQUESTED_RANGE_NOT_SATISFIABLE, [
+                'Content-Type' => 'application/json'
+            ]);
+        }
+
+        $em->flush();
+
+        return new Response('Le client a été modifié avec succès !', Response::HTTP_CREATED, [
+            'Content-Type' => 'application/json'
+        ]);
+    }
 }

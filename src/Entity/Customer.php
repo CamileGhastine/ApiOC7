@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
+use JMS\Serializer\Annotation\SerializedName;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -34,6 +35,7 @@ class Customer
     /**
      * @ORM\Column(type="string", length=255)
      * @Serializer\Groups({"detail", "list"})
+     * @SerializedName("firstName")
      * @Assert\NotBlank(message= "Le champs prénom ne peut pas être vide.")
      * @Assert\Length(
      *      min = 2,
@@ -48,6 +50,7 @@ class Customer
     /**
      * @ORM\Column(type="string", length=255)
      * @Serializer\Groups({"detail", "list"})
+     * @SerializedName("lastName")
      * @Assert\NotBlank(message= "Le champs nom ne peut pas être vide.")
      * @Assert\Length(
      *      min = 2,
@@ -71,11 +74,12 @@ class Customer
      *      allowEmptyString = false
      * )
      */
-    private $adress;
+    private $address;
 
     /**
      * @ORM\Column(type="integer")
      * @Serializer\Groups({"detail", "list"})
+     * @SerializedName("postCode")
      * @Assert\NotBlank(message= "Le champs code postal ne peut pas être vide.")
      * @Assert\Length(
      *      min = 5,
@@ -152,14 +156,14 @@ class Customer
         return $this;
     }
 
-    public function getAdress(): ?string
+    public function getAddress(): ?string
     {
-        return $this->adress;
+        return $this->address;
     }
 
-    public function setAdress(string $adress): self
+    public function setAddress(string $address): self
     {
-        $this->adress = $adress;
+        $this->address = $address;
 
         return $this;
     }
