@@ -77,7 +77,12 @@ class Customer
      * @ORM\Column(type="integer")
      * @Serializer\Groups({"detail", "list"})
      * @Assert\NotBlank(message= "Le champs code postal ne peut pas être vide.")
-     * @Assert\Regex("/^(\d+)$/", message = "Le champs code postal n\'est pas au bon format")
+     * @Assert\Length(
+     *      min = 5,
+     *      max = 5,
+     *      exactMessage = "Le code postal doit comporter {{ limit }} chiffres",
+     *      allowEmptyString = false
+     * )
      */
     private $postCode;
 
