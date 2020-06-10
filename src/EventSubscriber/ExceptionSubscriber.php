@@ -2,11 +2,13 @@
 
 namespace App\EventSubscriber;
 
+use ErrorException;
 use RuntimeException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ExceptionSubscriber implements EventSubscriberInterface
@@ -18,27 +20,19 @@ class ExceptionSubscriber implements EventSubscriberInterface
     {
         $exception = $event->getThrowable();
 
-        if (!($exception instanceof NotFoundHttpException) && !($exception instanceof RuntimeException)) {
+        if (!($exception instanceof NotFoundHttpException) && !($exception instanceof ErrorException) && !($exception instanceof MethodNotAllowedHttpException)) {
             return ;
         }
-
-        $data =[
-            'status' => Response::HTTP_NOT_FOUND,
-            'message' => 'Erreur !!!'
-        ];
 
         if ($exception instanceof NotFoundHttpException) {
             $data = $this->getDataForNotFoundHttpException($exception);
         }
 
-        if ($exception instanceof RuntimeException && stripos($exception->getMessage(), 'Could not decode JSON') !== false) {
-            $data =[
-                'status' => Response::HTTP_NOT_FOUND,
-                'message' => 'Le format saisi n\'est pas un format json valide !'
-            ];
+        if ($exception instanceof ErrorException  || $exception instanceof MethodNotAllowedHttpException) {
+            $data = $this->getDataOtherException($exception);
         }
 
-        $response = new JsonResponse($data, Response::HTTP_NOT_FOUND);
+        $response = new JsonResponse($data, $data['status']);
 
         $event->setResponse($response);
     }
@@ -50,6 +44,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
      */
     private function getDataForNotFoundHttpException($exception)
     {
+
         if (stripos($exception->getMessage(), 'No route found') !== false) {
             return [
                 'status' => Response::HTTP_NOT_FOUND,
@@ -63,6 +58,33 @@ class ExceptionSubscriber implements EventSubscriberInterface
                 'message' => 'La ressource n\'existe pas.'
             ];
         }
+    }
+
+    /**
+     * @param $exception
+     *
+     * @return array
+     */
+    private function getDataOtherException ($exception)
+    {
+        if ($exception instanceof ErrorException) {
+            return [
+                'status' => Response::HTTP_NOT_FOUND,
+                'message' => 'Le format saisi n\'est pas un format json valide !'
+            ];
+        }
+
+        if ($exception instanceof MethodNotAllowedHttpException  && stripos($exception->getMessage(), 'Method Not Allowed') !== false) {
+            return [
+                'status' => Response::HTTP_METHOD_NOT_ALLOWED,
+                'message' => 'Pas de route trouvée pour cette méthode HTTP !'
+            ];
+        }
+
+        return $data =[
+            'status' => Response::HTTP_NOT_FOUND,
+            'message' => 'Erreur !!!'
+        ];
     }
 
     /**

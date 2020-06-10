@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Customer;
 use App\Repository\CustomerRepository;
 use App\Service\ParametersRepositoryPreparator;
+use App\Service\SetCustomer;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -20,17 +21,29 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * Class CustomerController
+ *
  * @Route("/api")
+ *
  * @package App\Controller
  */
 class CustomerController extends AbstractController
 {
+    private $serializer;
+    private $validator;
+    private $em;
+
+    public function __construct(SerializerInterface $serializer, ValidatorInterface $validator, EntityManagerInterface $em)
+    {
+        $this->serializer = $serializer;
+        $this->validator = $validator;
+        $this->em = $em;
+    }
+
     /**
      * @Route("/customers", name="list_customer", methods={"GET"})
      *
      * @param Request $request
      * @param CustomerRepository $customerRepository
-     * @param SerializerInterface $serializer
      * @param ParametersRepositoryPreparator $preparator
      *
      * @return JsonResponse|Response
@@ -39,7 +52,7 @@ class CustomerController extends AbstractController
      * @throws NonUniqueResultException
      * @throws Exception
      */
-    public function index(Request $request, CustomerRepository $customerRepository, SerializerInterface $serializer, ParametersRepositoryPreparator $preparator)
+    public function index(Request $request, CustomerRepository $customerRepository, ParametersRepositoryPreparator $preparator)
     {
         $parameters = $preparator->prepareParametersCustomer($request, $this->getParameter('paginator.maxResult'));
 
@@ -55,7 +68,7 @@ class CustomerController extends AbstractController
 
         $customer = $customerRepository->findCustomerPaginated($parameters);
 
-        $data = $serializer->serialize($customer->getIterator(), 'json', SerializationContext::create()->setGroups(['list']));
+        $data = $this->serializer->serialize($customer->getIterator(), 'json', SerializationContext::create()->setGroups(['list']));
 
         return new Response($data, Response::HTTP_OK, [
             'Content-Type' => 'application/json'
@@ -66,13 +79,12 @@ class CustomerController extends AbstractController
      * @Route("/customers/{id<\d+>}", name="show_customer", methods={"GET"})
      *
      * @param Customer $customer
-     * @param SerializerInterface $serializer
      *
      * @return Response
      */
-    public function show(Customer $customer, SerializerInterface $serializer)
+    public function show(Customer $customer)
     {
-        $data = $serializer->serialize($customer, 'json', SerializationContext::create()->setGroups(['detail']));
+        $data = $this->serializer->serialize($customer, 'json', SerializationContext::create()->setGroups(['detail']));
 
         return new Response($data, Response::HTTP_OK, [
             'Content-Type' => 'application/json'
@@ -83,28 +95,25 @@ class CustomerController extends AbstractController
      * @Route("/customers", name="add_customers", methods={"POST"})
      *
      * @param Request $request
-     * @param SerializerInterface $serializer
-     * @param EntityManagerInterface $em
-     * @param ValidatorInterface $validator
      *
      * @return Response
      */
-    public function new(Request $request, SerializerInterface $serializer, EntityManagerInterface $em, ValidatorInterface $validator)
+    public function new(Request $request)
     {
-        $customer = $serializer->deserialize($request->getContent(), Customer::class, 'json');
+        $customer = $this->serializer->deserialize($request->getContent(), Customer::class, 'json');
 
-        $errors = $validator->validate($customer);
+        $errors = $this->validator->validate($customer);
 
         if (count($errors)) {
-            $data = $serializer->serialize($errors, 'json');
+            $data = $this->serializer->serialize($errors, 'json');
 
             return new Response($data, Response::HTTP_REQUESTED_RANGE_NOT_SATISFIABLE, [
                 'Content-Type' => 'application/json'
             ]);
         }
 
-        $em->persist($customer);
-        $em->flush();
+        $this->em->persist($customer);
+        $this->em->flush();
 
         return new Response('Le client a été ajouté avec succès !', Response::HTTP_CREATED, [
             'Content-Type' => 'application/json'
@@ -114,37 +123,26 @@ class CustomerController extends AbstractController
     /**
      * @Route("/customers/{id<\d+>}", name="update_customer", methods={"PUT"})
      *
-     * @param Customer $customer
      * @param Request $request
-     * @param SerializerInterface $serializer
-     * @param ValidatorInterface $validator
-     * @param EntityManagerInterface $em
+     * @param Customer $customer
      *
      * @return Response
      */
-    public function update(Customer $customer, Request $request, SerializerInterface $serializer, ValidatorInterface $validator, EntityManagerInterface $em)
+    public function update(Customer $customer, Request $request, SetCustomer $setCustomer)
     {
-        $data = json_decode($request->getContent());
+        $setCustomer->set($request, $customer);
 
-        foreach ($data as $key => $value) {
-            $setter = 'set'.ucfirst($key);
-
-            if (method_exists($customer, $setter)) {
-                $customer->$setter($value);
-            }
-        }
-
-        $errors = $validator->validate($customer);
+        $errors = $this->validator->validate($customer);
 
         if (count($errors)) {
-            $data = $serializer->serialize($errors, 'json');
+            $data = $this->serializer->serialize($errors, 'json');
 
             return new Response($data, Response::HTTP_REQUESTED_RANGE_NOT_SATISFIABLE, [
                 'Content-Type' => 'application/json'
             ]);
         }
 
-        $em->flush();
+        $this->em->flush();
 
         return new Response('Le client a été modifié avec succès !', Response::HTTP_CREATED, [
             'Content-Type' => 'application/json'
