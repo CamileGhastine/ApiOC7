@@ -14,72 +14,68 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * Class PhoneController
  * @Route("/api")
  * @package App\Controller
  */
-class PhoneController extends AbstractController
+class PhoneController extends Controller
 {
-    private $serializer;
-
-
     public function __construct(SerializerInterface $serializer)
     {
-        $this->serializer = $serializer;
+        parent::__construct($serializer);
     }
 
-    /**
-     * @Route("/phones", name="list_phone", methods={"GET"})
-     *
-     * @param Request $request
-     * @param PhoneRepository $phoneRepository
-     * @param SerializerInterface $serializer
-     * @param ParametersRepositoryPreparator $preparator
-     *
-     * @return Response
-     *
-     * @throws Exception
-     */
-    public function index(Request $request, PhoneRepository $phoneRepository, ParametersRepositoryPreparator $preparator)
-    {
-        $parameters = $preparator->prepareParametersPhone($request, $this->getParameter('paginator.maxResult'));
+//    /**
+//     * @Route("/phones", name="list_phone", methods={"GET"})
+//     *
+//     * @param Request $request
+//     * @param PhoneRepository $phoneRepository
+//     * @param SerializerInterface $serializer
+//     * @param ParametersRepositoryPreparator $preparator
+//     *
+//     * @return Response
+//     *
+//     * @throws Exception
+//     */
+//    public function index(Request $request, PhoneRepository $phoneRepository, ParametersRepositoryPreparator $preparator)
+//    {
+//        $parameters = $preparator->prepareParametersPhone($request, $this->getParameter('paginator.maxResult'));
+//
+//        // if $parameters have message errors
+//        if (isset($parameters['error'])) {
+//            $data = [
+//                'status' => Response::HTTP_BAD_REQUEST,
+//                'message' => $parameters['error']
+//            ];
+//
+//            return new JsonResponse($data, Response::HTTP_BAD_REQUEST);
+//        }
+//
+//        $phone = $phoneRepository->findPhonePaginated($parameters);
+//
+//        $data = $this->serializer->serialize($phone->getIterator(), 'json', SerializationContext::create()->setGroups(['list']));
+//
+//        return new Response($data, Response::HTTP_OK, [
+//            'Content-Type' => 'application/json'
+//        ]);
+//    }
 
-        // if $parameters have message errors
-        if (isset($parameters['error'])) {
-            $data = [
-                'status' => Response::HTTP_BAD_REQUEST,
-                'message' => $parameters['error']
-            ];
-
-            return new JsonResponse($data, Response::HTTP_BAD_REQUEST);
-        }
-
-        $phone = $phoneRepository->findPhonePaginated($parameters);
-
-        $data = $this->serializer->serialize($phone->getIterator(), 'json', SerializationContext::create()->setGroups(['list']));
-
-        return new Response($data, Response::HTTP_OK, [
-            'Content-Type' => 'application/json'
-        ]);
-    }
-
-    /**
-     * @Route("/phones/{id<\d+>}", name="show_phone", methods={"GET"})
-     *
-     * @param Phone $phone
-     * @param SerializerInterface $serializer
-     *
-     * @return Response
-     */
-    public function show(Phone $phone)
-    {
-        $data = $this->serializer->serialize($phone, 'json', SerializationContext::create()->setGroups(['detail']));
-
-        return new Response($data, Response::HTTP_OK, [
-            'Content-Type' => 'application/json'
-        ]);
-    }
+//    /**
+//     * @Route("/phones/{id<\d+>}", name="show_phone", methods={"GET"})
+//     *
+//     * @param Phone $phone
+//     * @param SerializerInterface $serializer
+//     *
+//     * @return Response
+//     */
+//    public function show(Phone $phone)
+//    {
+//        $data = $this->serializer->serialize($phone, 'json', SerializationContext::create()->setGroups(['detail']));
+//
+//        return new Response($data, Response::HTTP_OK, [
+//            'Content-Type' => 'application/json'
+//        ]);
+//    }
 }
