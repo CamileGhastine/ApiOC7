@@ -41,7 +41,7 @@ class CustomerFixtures extends Fixture implements DependentFixtureInterface
         $customer->setFirstName($faker->firstName)
             ->setLastName($faker->lastName)
             ->setEmail($customer->getLastName().'@'.$faker->freeEmailDomain)
-            ->setAdress($faker->streetAddress)
+            ->setAddress($faker->streetAddress)
             ->setPostCode(rand(10000, 99999))
             ->setCity($faker->city)
             ->addPhone($this->getReference($phones[array_rand($phones)]))

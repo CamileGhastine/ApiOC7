@@ -16,7 +16,8 @@
         "symfony/translation": "5.1.*",
         "symfony/validator": "5.1.*",
         "symfony/yaml": "5.1.*",
-        "willdurand/hateoas-bundle": "^2.1"
+        "willdurand/hateoas-bundle": "^2.1",
+      "ext-json": "*"
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.3",
