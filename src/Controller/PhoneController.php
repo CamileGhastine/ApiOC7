@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Phone;
 use App\Repository\PhoneRepository;
 use App\Service\ParametersRepositoryPreparator;
+use Doctrine\ORM\EntityManagerInterface;
 use Exception;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
@@ -13,6 +14,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * Class PhoneController
@@ -21,6 +23,14 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class PhoneController extends AbstractController
 {
+    private $serializer;
+
+
+    public function __construct(SerializerInterface $serializer)
+    {
+        $this->serializer = $serializer;
+    }
+
     /**
      * @Route("/phones", name="list_phone", methods={"GET"})
      *
@@ -33,7 +43,7 @@ class PhoneController extends AbstractController
      *
      * @throws Exception
      */
-    public function index(Request $request, PhoneRepository $phoneRepository, SerializerInterface $serializer, ParametersRepositoryPreparator $preparator)
+    public function index(Request $request, PhoneRepository $phoneRepository, ParametersRepositoryPreparator $preparator)
     {
         $parameters = $preparator->prepareParametersPhone($request, $this->getParameter('paginator.maxResult'));
 
@@ -49,7 +59,7 @@ class PhoneController extends AbstractController
 
         $phone = $phoneRepository->findPhonePaginated($parameters);
 
-        $data = $serializer->serialize($phone->getIterator(), 'json', SerializationContext::create()->setGroups(['list']));
+        $data = $this->serializer->serialize($phone->getIterator(), 'json', SerializationContext::create()->setGroups(['list']));
 
         return new Response($data, Response::HTTP_OK, [
             'Content-Type' => 'application/json'
@@ -64,9 +74,9 @@ class PhoneController extends AbstractController
      *
      * @return Response
      */
-    public function show(Phone $phone, SerializerInterface $serializer)
+    public function show(Phone $phone)
     {
-        $data = $serializer->serialize($phone, 'json', SerializationContext::create()->setGroups(['detail']));
+        $data = $this->serializer->serialize($phone, 'json', SerializationContext::create()->setGroups(['detail']));
 
         return new Response($data, Response::HTTP_OK, [
             'Content-Type' => 'application/json'
