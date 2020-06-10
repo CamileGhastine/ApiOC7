@@ -10,10 +10,19 @@ use JMS\Serializer\Annotation as Serializer;
 use JMS\Serializer\Annotation\SerializedName;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
+use Hateoas\Configuration\Annotation as Hateoas;
 
 /**
  * @ORM\Entity(repositoryClass=CustomerRepository::class)
  * @UniqueEntity("email")
+ * @Hateoas\Relation("self", href = "expr('/api/customers/' ~ object.getId())")
+ * @Hateoas\Relation("create", href = @Hateoas\Route("new_customer"))
+ * @Hateoas\Relation(
+ *     "phone",
+ *     href = "expr('/api/phones/' ~ object.getPhone().getId())",
+ *     embedded = "expr(object.getPhone())",
+ *     exclusion = @Hateoas\Exclusion(excludeIf = "expr(object.getPhone() === null)")
+ * )
  */
 class Customer
 {
@@ -64,7 +73,7 @@ class Customer
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Serializer\Groups({"detail", "list"})
+     * @Serializer\Groups({"detail"})
      * @Assert\NotBlank(message= "Le champs adresse ne peut pas être vide.")
      * @Assert\Length(
      *      min = 2,
@@ -78,7 +87,7 @@ class Customer
 
     /**
      * @ORM\Column(type="integer")
-     * @Serializer\Groups({"detail", "list"})
+     * @Serializer\Groups({"detail"})
      * @SerializedName("postCode")
      * @Assert\NotBlank(message= "Le champs code postal ne peut pas être vide.")
      * @Assert\Length(
@@ -92,7 +101,7 @@ class Customer
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Serializer\Groups({"detail", "list"})
+     * @Serializer\Groups({"detail"})
      * @Assert\NotBlank(message= "Le champs ville ne peut pas être vide.")
      * @Assert\Length(
      *      min = 2,

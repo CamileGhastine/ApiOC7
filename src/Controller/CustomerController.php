@@ -92,7 +92,7 @@ class CustomerController extends AbstractController
     }
 
     /**
-     * @Route("/customers", name="add_customers", methods={"POST"})
+     * @Route("/customers", name="add_customer", methods={"POST"})
      *
      * @param Request $request
      *
@@ -151,7 +151,7 @@ class CustomerController extends AbstractController
     }
 
     /**
-     * @Route("/customers/{id<\d+>}", name="delete_customers", methods={"DELETE"})
+     * @Route("/customers/{id<\d+>}", name="delete_customer", methods={"DELETE"})
      *
      * @param Customer $customer
      *
