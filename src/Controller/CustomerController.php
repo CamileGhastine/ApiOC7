@@ -148,4 +148,19 @@ class CustomerController extends AbstractController
             'Content-Type' => 'application/json'
         ]);
     }
+
+    /**
+     * @Route("/customers/{id<\d+>}", name="delete_customers", methods={"DELETE"})
+     */
+    public function delete(Customer $customer)
+    {
+        $this->em->remove($customer);
+
+        $this->em->flush();
+
+        return new Response('Le client a été supprimé avec succès !', Response::HTTP_RESET_CONTENT, [
+            'Content-Type' => 'application/json'
+        ]);
+
+    }
 }
