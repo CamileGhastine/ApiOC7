@@ -32,6 +32,28 @@ GET : /api/customers :
 GET : /api/customers/{id} : Return Details of the customer with the id={id}
 
 
+POST : /api/customers : add a customer that you have send in JSON format in the body as below
+    {
+        "email": "email@email.fr",
+        "firstName": "first name",
+        "lastName": "last name",
+        "address": "street adress",
+        "postCode": XXXXX,
+        "city": "city"
+    }
+
+
+PUT : /api/customers/{id} : update the customer with the id={id} that you have send in JSON format in the body
+    Exemple : change the street adress, the post code and the city
+    {
+        "address": "street adress",
+        "postCode": XXXXX,
+        "city": "city"
+    }
+
+
+DELETE : /api/customers/{id} : delete the customer with the id={id}
+
 
 
 
