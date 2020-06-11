@@ -96,11 +96,13 @@ class CustomerController extends AbstractController
      *
      * @param Request $request
      *
+     * @param SetCustomer $setCustomer
      * @return Response
      */
-    public function new(Request $request)
+    public function new(Request $request, SetCustomer $setCustomer)
     {
-        $customer = $this->serializer->deserialize($request->getContent(), Customer::class, 'json');
+        $customer = $setCustomer->setNew($request);
+
 
         $errors = $this->validator->validate($customer);
 
@@ -166,6 +168,5 @@ class CustomerController extends AbstractController
         return new Response('Le client a été supprimé avec succès !', Response::HTTP_RESET_CONTENT, [
             'Content-Type' => 'application/json'
         ]);
-
     }
 }

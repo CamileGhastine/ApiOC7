@@ -44,7 +44,6 @@ class ExceptionSubscriber implements EventSubscriberInterface
      */
     private function getDataForNotFoundHttpException($exception)
     {
-
         if (stripos($exception->getMessage(), 'No route found') !== false) {
             return [
                 'status' => Response::HTTP_NOT_FOUND,
@@ -65,7 +64,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
      *
      * @return array
      */
-    private function getDataOtherException ($exception)
+    private function getDataOtherException($exception)
     {
         if ($exception instanceof ErrorException) {
             return [
