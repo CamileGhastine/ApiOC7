@@ -113,12 +113,6 @@ class Customer
      */
     private $city;
 
-    /**
-     * @ORM\ManyToMany(targetEntity=Phone::class, inversedBy="customers")
-     * @Serializer\Groups({"detail"})
-     */
-    private $phones;
-
     public function __construct()
     {
         $this->phones = new ArrayCollection();
@@ -197,32 +191,6 @@ class Customer
     public function setCity(string $city): self
     {
         $this->city = $city;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Phone[]
-     */
-    public function getPhones(): Collection
-    {
-        return $this->phones;
-    }
-
-    public function addPhone(Phone $phone): self
-    {
-        if (!$this->phones->contains($phone)) {
-            $this->phones[] = $phone;
-        }
-
-        return $this;
-    }
-
-    public function removePhone(Phone $phone): self
-    {
-        if ($this->phones->contains($phone)) {
-            $this->phones->removeElement($phone);
-        }
 
         return $this;
     }

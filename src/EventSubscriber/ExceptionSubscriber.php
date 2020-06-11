@@ -68,7 +68,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
     {
         if ($exception instanceof ErrorException) {
             return [
-                'status' => Response::HTTP_NOT_FOUND,
+                'status' => Response::HTTP_BAD_REQUEST,
                 'message' => 'Le format saisi n\'est pas un format json valide !'
             ];
         }

@@ -16,6 +16,11 @@ class SetCustomer
         $this->phoneRepository = $phoneRepository;
     }
 
+    /**
+     * @param $request
+     *
+     * @param $customer
+     */
     public function set($request, $customer)
     {
         $data = json_decode($request->getContent());
@@ -27,33 +32,5 @@ class SetCustomer
                 $customer->$setter($value);
             }
         }
-
-        foreach ($data->phones as $phoneId) {
-            $customer->addPhone($this->phoneRepository->find($phoneId));
-        }
-    }
-
-    /**
-     * @param Request $request
-     *
-     * @return Customer
-     */
-    public function setNew(Request $request)
-    {
-        $data = json_decode($request->getContent());
-
-        $customer = new Customer();
-        $customer->setEmail($data->email)
-            ->setFirstName($data->firstName)
-            ->setLastName($data->lastName)
-            ->setAddress($data->address)
-            ->setPostCode($data->postCode)
-            ->setCity($data->city);
-
-        foreach ($data->phones as $phoneId) {
-            $customer->addPhone($this->phoneRepository->find($phoneId));
-        }
-
-        return $customer;
     }
 }

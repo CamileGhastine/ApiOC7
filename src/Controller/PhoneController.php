@@ -61,9 +61,8 @@ class PhoneController extends AbstractController
 
         $data = $this->serializer->serialize($phone->getIterator(), 'json', SerializationContext::create()->setGroups(['list']));
 
-        return new Response($data, Response::HTTP_OK, [
-            'Content-Type' => 'application/json'
-        ]);
+        return new Response($data, Response::HTTP_OK, ['Content-TYpe' => 'application/json']);
+
     }
 
     /**
@@ -77,8 +76,6 @@ class PhoneController extends AbstractController
     {
         $data = $this->serializer->serialize($phone, 'json', SerializationContext::create()->setGroups(['detail']));
 
-        return new Response($data, Response::HTTP_OK, [
-            'Content-Type' => 'application/json'
-        ]);
+        return new Response($data, Response::HTTP_OK, ['Content-TYpe' => 'application/json']);
     }
 }
