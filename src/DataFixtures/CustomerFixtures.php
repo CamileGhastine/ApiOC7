@@ -44,6 +44,7 @@ class CustomerFixtures extends Fixture implements DependentFixtureInterface
             ->setAddress($faker->streetAddress)
             ->setPostCode(rand(10000, 99999))
             ->setCity($faker->city)
+            ->setUser($this->getReference('client'))
             ->addPhone($this->getReference($phones[array_rand($phones)]))
         ;
 
@@ -64,6 +65,7 @@ class CustomerFixtures extends Fixture implements DependentFixtureInterface
     {
         return [
             PhoneFixtures::class,
+            UserFixtures::class,
         ];
     }
 }
