@@ -25,8 +25,8 @@ GET : /api/customers :
     - GET : /api/customers : return all customers
 
     parameter "page" : pagination with 5 customer per page
-    - GET : /api/phones?page=X (X is a number upper than 0) : return the page X of all customers
-    - (tips) GET : /api/phones?page : return the first page of all customers
+    - GET : /api/customers?page=X (X is a number upper than 0) : return the page X of all customers
+    - (tips) GET : /customers/phones?page : return the first page of all customers
 
 
 GET : /api/customers/{id} : Return Details of the customer with the id={id}

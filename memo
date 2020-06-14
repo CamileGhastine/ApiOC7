@@ -1,0 +1,15 @@
+Créer un clef SSL (la doc de LexikJWTAuthenticationBundle):
+
+- Ouvrir la console GitBash (qui simule un environement linux)
+- Se placer à la racine du projet et créer un repertoire :
+        mkdir -p config/jwt
+- Créer la clef privé :
+        openssl genrsa -out config/jwt/private.pem 4096
+- Créer la clef publique :
+        openssl rsa -in config/jwt/private.pem -outform PEM -pubout -out config/jwt/public.pem
+
+- Tester le token (une fois un user enregistré):
+        curl -X POST -H "Content-Type: application/json" https://127.0.0.1:8000/api/login_check -d '{"username":"client","password":"password"}'
+    Le test ne fonctionne pas et le token n'est pas généré (problème de certificat).
+    Je suis passé par le serveur dev de symfony pour générer un certicificat SSl valide avec la commande :
+    symfony server:ca:install
