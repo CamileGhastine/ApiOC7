@@ -79,5 +79,20 @@ class SecurityController extends AbstractController
         return new JsonResponse($data, Response::HTTP_CREATED, ['Content-Type' => 'application/json'] );
     }
 
+    /**
+     * @Route("/login", name="login", methods={"post"})
+     *
+     * @param Request $request
+     */
+    public function login(Request $request)
+    {
+        $user = $this->getUser();
 
+        $data =[
+            'status' => Response::HTTP_ACCEPTED,
+            'message' => 'Token : ***************'
+        ];
+
+        return new JsonResponse($data, Response::HTTP_ACCEPTED, ['Content-Type' => 'application/json'] );
+    }
 }
