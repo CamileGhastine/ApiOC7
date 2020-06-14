@@ -13,7 +13,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=CustomerRepository::class)
- * @UniqueEntity("email")
+ * @UniqueEntity("email", message="ce courriel est déjà utilisé !")
  */
 class Customer
 {
@@ -28,6 +28,7 @@ class Customer
     /**
      * @ORM\Column(type="string", length=255)
      * @Serializer\Groups({"detail", "list"})
+     * @Assert\NotBlank(message= "Le champs prénom ne peut pas être vide.")
      * @Assert\Email
      */
     private $email;

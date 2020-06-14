@@ -6,10 +6,13 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
+ * @UniqueEntity("username", message="Ce nom d'utilisateur est déjà utilisé !")
  */
 class User implements UserInterface
 {
@@ -22,6 +25,14 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
+     * @Assert\NotBlank(message= "Le champs username ne peut pas être vide.")
+     * @Assert\Length(
+     *      min = 2,
+     *      max = 50,
+     *      minMessage = "Le champs username doit comporter au moins {{ limit }} charactères",
+     *      maxMessage = "Le champs username doit comporter au plus {{ limit }} charactères",
+     *      allowEmptyString = false
+     * )
      */
     private $username;
 
@@ -33,6 +44,7 @@ class User implements UserInterface
     /**
      * @var string The hashed password
      * @ORM\Column(type="string")
+     * @Assert\NotBlank(message= "Le mot de passe ne peut pas être vide.")
      */
     private $password;
 
