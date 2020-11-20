@@ -4,10 +4,11 @@ namespace App\DataFixtures;
 
 use App\Entity\Phone;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
 
-class PhoneFixtures extends Fixture
+class PhoneFixtures extends Fixture implements DependentFixtureInterface
 {
     /**
      * @param ObjectManager $manager
@@ -25,7 +26,9 @@ class PhoneFixtures extends Fixture
                 $phone->setBrand($brand)
                     ->setModel($model.$i.(($brand == 'Huawei') ? '0' : ''))
                     ->setPrice(($i+rand(5, 6))*100 + [49, 99][rand(0, 1)])
-                    ->setDescription($faker->paragraph($nbSentences = 3, $variableNbSentences = true));
+                    ->setDescription($faker->paragraph($nbSentences = 3, $variableNbSentences = true))
+                    ->getCustomers($this->getReference('customer-'.rand(1, 30)))
+                ;
 
                 $this->setReference('phone'.($j+$i), $phone);
 
@@ -34,5 +37,15 @@ class PhoneFixtures extends Fixture
             $j += 5;
         }
         $manager->flush();
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getDependencies()
+    {
+        return [
+            CustomerFixtures::class,
+        ];
     }
 }

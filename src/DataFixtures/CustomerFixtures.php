@@ -15,47 +15,24 @@ class CustomerFixtures extends Fixture implements DependentFixtureInterface
      */
     public function load(ObjectManager $manager)
     {
-        $phones = [];
-        for ($i = 1; $i <= 25; $i++) {
-            $phones[$i] = 'phone'.$i;
-        }
+        for ($i = 0; $i <= 30; $i++) {
+            $faker = Factory::create('fr_FR');
 
-        for ($i = 0; $i < 10; $i++) {
-            $customer = $this->createCustomer($phones);
+            $customer = new Customer();
+            $customer->setFirstName($faker->firstName)
+                ->setLastName($faker->lastName)
+                ->setEmail($customer->getLastName().'@'.$faker->freeEmailDomain)
+                ->setAddress($faker->streetAddress)
+                ->setPostCode(rand(10000, 99999))
+                ->setCity($faker->city)
+                ->getUsers($this->getReference('client-'.rand(1, 2)))
+            ;
+
+            $this->addReference('customer-'.$i, $customer);
 
             $manager->persist($customer);
         }
         $manager->flush();
-    }
-
-    /**
-     * @param array $phones
-     *
-     * @return Customer
-     */
-    private function createCustomer(array $phones) : Customer
-    {
-        $faker = Factory::create('fr_FR');
-
-        $customer = new Customer();
-        $customer->setFirstName($faker->firstName)
-            ->setLastName($faker->lastName)
-            ->setEmail($customer->getLastName().'@'.$faker->freeEmailDomain)
-            ->setAddress($faker->streetAddress)
-            ->setPostCode(rand(10000, 99999))
-            ->setCity($faker->city)
-            ->setUser($this->getReference('client'))
-            ->addPhone($this->getReference($phones[array_rand($phones)]))
-        ;
-
-        if (1 === rand(1, 2)) {
-            $customer->addPhone($this->getReference($phones[array_rand($phones)]));
-        }
-        if (1 === rand(1, 3)) {
-            $customer->addPhone($this->getReference($phones[array_rand($phones)]));
-        }
-
-        return $customer;
     }
 
     /**
@@ -64,7 +41,6 @@ class CustomerFixtures extends Fixture implements DependentFixtureInterface
     public function getDependencies()
     {
         return [
-            PhoneFixtures::class,
             UserFixtures::class,
         ];
     }

@@ -49,7 +49,7 @@ class User implements UserInterface
     private $password;
 
     /**
-     * @ORM\OneToMany(targetEntity=Customer::class, mappedBy="user", orphanRemoval=true)
+     * @ORM\ManyToMany(targetEntity=Customer::class, inversedBy="users")
      */
     private $customers;
 
@@ -143,7 +143,6 @@ class User implements UserInterface
     {
         if (!$this->customers->contains($customer)) {
             $this->customers[] = $customer;
-            $customer->setUser($this);
         }
 
         return $this;
@@ -153,10 +152,6 @@ class User implements UserInterface
     {
         if ($this->customers->contains($customer)) {
             $this->customers->removeElement($customer);
-            // set the owning side to null (unless already changed)
-            if ($customer->getUser() === $this) {
-                $customer->setUser(null);
-            }
         }
 
         return $this;

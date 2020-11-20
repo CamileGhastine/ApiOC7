@@ -21,15 +21,17 @@ class UserFixtures extends Fixture
      */
     public function load(ObjectManager $manager)
     {
-        $user = new user();
+        for($i=1; $i<=2;$i++){
+            $user = new user();
 
-        $user->setUsername('Client')
-            ->setPassword($this->passwordEncoder->encodePassword($user, 'password'))
-            ->setRoles($user->getRoles());
+            $user->setUsername('Client-'.$i)
+                ->setPassword($this->passwordEncoder->encodePassword($user, 'pass-'.$i))
+                ->setRoles($user->getRoles());
 
-        $this->addReference('client', $user);
+            $this->addReference('client-'.$i, $user);
 
-        $manager->persist($user);
+            $manager->persist($user);
+        }
 
         $manager->flush();
     }

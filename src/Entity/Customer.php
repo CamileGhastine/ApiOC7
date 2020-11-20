@@ -112,14 +112,14 @@ class Customer
     private $phones;
 
     /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="customers")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\ManyToMany(targetEntity=User::class, mappedBy="customers")
      */
-    private $user;
+    private $users;
 
     public function __construct()
     {
         $this->phones = new ArrayCollection();
+        $this->users = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -225,14 +225,30 @@ class Customer
         return $this;
     }
 
-    public function getUser(): ?User
+    /**
+     * @return Collection|User[]
+     */
+    public function getUsers(): Collection
     {
-        return $this->user;
+        return $this->users;
     }
 
-    public function setUser(?User $user): self
+    public function addUser(User $user): self
     {
-        $this->user = $user;
+        if (!$this->users->contains($user)) {
+            $this->users[] = $user;
+            $user->addCustomer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): self
+    {
+        if ($this->users->contains($user)) {
+            $this->users->removeElement($user);
+            $user->removeCustomer($this);
+        }
 
         return $this;
     }
