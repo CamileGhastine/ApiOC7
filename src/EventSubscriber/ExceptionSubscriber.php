@@ -44,7 +44,6 @@ class ExceptionSubscriber implements EventSubscriberInterface
      */
     private function getDataForNotFoundHttpException($exception)
     {
-
         if (stripos($exception->getMessage(), 'No route found') !== false) {
             return [
                 'status' => Response::HTTP_NOT_FOUND,
@@ -65,11 +64,11 @@ class ExceptionSubscriber implements EventSubscriberInterface
      *
      * @return array
      */
-    private function getDataOtherException ($exception)
+    private function getDataOtherException($exception)
     {
         if ($exception instanceof ErrorException) {
             return [
-                'status' => Response::HTTP_NOT_FOUND,
+                'status' => Response::HTTP_BAD_REQUEST,
                 'message' => 'Le format saisi n\'est pas un format json valide !'
             ];
         }

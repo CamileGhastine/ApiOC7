@@ -15,3 +15,4 @@ Le test ne fonctionne pas et le token n'est pas généré (problème de certific
 Résolution : Je suis passé par le serveur dev de symfony pour générer un certicificat SSl valide avec la commande : symfony server:ca:install
 
 Rq: si git bash ne fonctionne pas pour la création des clefs, passer par ubuntu
+

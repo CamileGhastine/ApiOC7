@@ -3,8 +3,24 @@
 
 namespace App\Service;
 
+use App\Entity\Customer;
+use App\Repository\PhoneRepository;
+use Symfony\Component\HttpFoundation\Request;
+
 class SetCustomer
 {
+    private $phoneRepository;
+
+    public function __construct(PhoneRepository $phoneRepository)
+    {
+        $this->phoneRepository = $phoneRepository;
+    }
+
+    /**
+     * @param $request
+     *
+     * @param $customer
+     */
     public function set($request, $customer)
     {
         $data = json_decode($request->getContent());
@@ -16,7 +32,5 @@ class SetCustomer
                 $customer->$setter($value);
             }
         }
-
-        return $customer;
     }
 }

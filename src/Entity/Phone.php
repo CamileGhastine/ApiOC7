@@ -45,11 +45,6 @@ class Phone
      */
     private $description;
 
-    /**
-     * @ORM\ManyToMany(targetEntity=Customer::class, mappedBy="phones")
-     */
-    private $customers;
-
     public function __construct()
     {
         $this->customers = new ArrayCollection();
@@ -104,34 +99,6 @@ class Phone
     public function setDescription(string $description): self
     {
         $this->description = $description;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Customer[]
-     */
-    public function getCustomers(): Collection
-    {
-        return $this->customers;
-    }
-
-    public function addCustomer(Customer $customer): self
-    {
-        if (!$this->customers->contains($customer)) {
-            $this->customers[] = $customer;
-            $customer->addPhone($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCustomer(Customer $customer): self
-    {
-        if ($this->customers->contains($customer)) {
-            $this->customers->removeElement($customer);
-            $customer->removePhone($this);
-        }
 
         return $this;
     }
