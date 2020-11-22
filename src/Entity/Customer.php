@@ -14,15 +14,7 @@ use Hateoas\Configuration\Annotation as Hateoas;
 
 /**
  * @ORM\Entity(repositoryClass=CustomerRepository::class)
- * @UniqueEntity("email")
- * @Hateoas\Relation("self", href = "expr('/api/customers/' ~ object.getId())")
- * @Hateoas\Relation("create", href = @Hateoas\Route("new_customer"))
- * @Hateoas\Relation(
- *     "phone",
- *     href = "expr('/api/phones/' ~ object.getPhone().getId())",
- *     embedded = "expr(object.getPhone())",
- *     exclusion = @Hateoas\Exclusion(excludeIf = "expr(object.getPhone() === null)")
- * )
+ * @UniqueEntity("email", message="ce courriel est déjà utilisé !")
  */
 class Customer
 {
@@ -37,6 +29,7 @@ class Customer
     /**
      * @ORM\Column(type="string", length=255)
      * @Serializer\Groups({"detail", "list"})
+     * @Assert\NotBlank(message= "Le champs prénom ne peut pas être vide.")
      * @Assert\Email
      */
     private $email;
@@ -113,9 +106,21 @@ class Customer
      */
     private $city;
 
+    /**
+     * @ORM\ManyToMany(targetEntity=Phone::class, inversedBy="customers")
+     * @Serializer\Groups({"detail"})
+     */
+    private $phones;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=User::class, mappedBy="customers")
+     */
+    private $users;
+
     public function __construct()
     {
         $this->phones = new ArrayCollection();
+        $this->users = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -194,4 +199,59 @@ class Customer
 
         return $this;
     }
+
+    /**
+     * @return Collection|Phone[]
+     */
+    public function getPhones(): Collection
+    {
+        return $this->phones;
+    }
+
+    public function addPhone(Phone $phone): self
+    {
+        if (!$this->phones->contains($phone)) {
+            $this->phones[] = $phone;
+        }
+
+        return $this;
+    }
+
+    public function removePhone(Phone $phone): self
+    {
+        if ($this->phones->contains($phone)) {
+            $this->phones->removeElement($phone);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|User[]
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(User $user): self
+    {
+        if (!$this->users->contains($user)) {
+            $this->users[] = $user;
+            $user->addCustomer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): self
+    {
+        if ($this->users->contains($user)) {
+            $this->users->removeElement($user);
+            $user->removeCustomer($this);
+        }
+
+        return $this;
+    }
+
 }

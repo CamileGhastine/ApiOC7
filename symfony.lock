@@ -298,7 +298,7 @@
         "version": "v5.1.0"
     },
     "symfony/inflector": {
-        "version": "v5.1.0"
+        "version": "v5.1.1"
     },
     "symfony/maker-bundle": {
         "version": "1.0",
@@ -331,10 +331,10 @@
         "version": "v1.0.4"
     },
     "symfony/property-access": {
-        "version": "v5.1.0"
+        "version": "v5.1.1"
     },
     "symfony/property-info": {
-        "version": "v5.1.0"
+        "version": "v5.1.1"
     },
     "symfony/routing": {
         "version": "5.1",
@@ -363,16 +363,16 @@
         ]
     },
     "symfony/security-core": {
-        "version": "v5.1.0"
+        "version": "v5.1.1"
     },
     "symfony/security-csrf": {
-        "version": "v5.1.0"
+        "version": "v5.1.1"
     },
     "symfony/security-guard": {
-        "version": "v5.1.0"
+        "version": "v5.1.1"
     },
     "symfony/security-http": {
-        "version": "v5.1.0"
+        "version": "v5.1.1"
     },
     "symfony/service-contracts": {
         "version": "v2.1.2"
