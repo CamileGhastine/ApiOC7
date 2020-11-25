@@ -70,7 +70,9 @@ class CustomerController extends AbstractController
 
         $data = $this->serializer->serialize($customer->getIterator(), 'json', SerializationContext::create()->setGroups(['list']));
 
-        return new Response($data, Response::HTTP_OK, ['Content-TYpe' => 'application/json']);
+        return new Response($data, Response::HTTP_OK, [
+            'Content-Type' => 'application/json'
+        ]);
     }
 
     /**
@@ -78,13 +80,15 @@ class CustomerController extends AbstractController
      *
      * @param Customer $customer
      *
-     * @return JsonResponse|Response
+     * @return Response
      */
     public function show(Customer $customer)
     {
         $data = $this->serializer->serialize($customer, 'json', SerializationContext::create()->setGroups(['detail']));
 
-        return new Response($data, Response::HTTP_OK, ['Content-TYpe' => 'application/json']);
+        return new Response($data, Response::HTTP_OK, [
+            'Content-Type' => 'application/json'
+        ]);
     }
 
     /**
@@ -92,26 +96,28 @@ class CustomerController extends AbstractController
      *
      * @param Request $request
      *
-     * @param SetCustomer $setCustomer
-     *
-     * @return JsonResponse|Response
+     * @return Response
      */
-    public function new(Request $request, SerializerInterface $serializer)
+    public function new(Request $request)
     {
-        $customer = $serializer->deserialize($request->getContent(), Customer::class, 'json');
+        $customer = $this->serializer->deserialize($request->getContent(), Customer::class, 'json');
 
         $errors = $this->validator->validate($customer);
 
         if (count($errors)) {
             $data = $this->serializer->serialize($errors, 'json');
 
-            return new Response($data, Response::HTTP_UNPROCESSABLE_ENTITY, ['Content-TYpe' => 'application/json']);
+            return new Response($data, Response::HTTP_REQUESTED_RANGE_NOT_SATISFIABLE, [
+                'Content-Type' => 'application/json'
+            ]);
         }
 
         $this->em->persist($customer);
         $this->em->flush();
 
-        return new JsonResponse('Le client a été ajouté avec succès !', Response::HTTP_CREATED);
+        return new Response('Le client a été ajouté avec succès !', Response::HTTP_CREATED, [
+            'Content-Type' => 'application/json'
+        ]);
     }
 
     /**
@@ -121,7 +127,7 @@ class CustomerController extends AbstractController
      * @param Request $request
      * @param SetCustomer $setCustomer
      *
-     * @return JsonResponse|Response
+     * @return Response
      */
     public function update(Customer $customer, Request $request, SetCustomer $setCustomer)
     {
@@ -132,12 +138,16 @@ class CustomerController extends AbstractController
         if (count($errors)) {
             $data = $this->serializer->serialize($errors, 'json');
 
-            return new Response($data, Response::HTTP_UNPROCESSABLE_ENTITY, ['Content-TYpe' => 'application/json']);
+            return new Response($data, Response::HTTP_REQUESTED_RANGE_NOT_SATISFIABLE, [
+                'Content-Type' => 'application/json'
+            ]);
         }
 
         $this->em->flush();
 
-        return new JsonResponse('Le client a été modifié avec succès !', Response::HTTP_CREATED);
+        return new Response('Le client a été modifié avec succès !', Response::HTTP_CREATED, [
+            'Content-Type' => 'application/json'
+        ]);
     }
 
     /**
@@ -145,7 +155,7 @@ class CustomerController extends AbstractController
      *
      * @param Customer $customer
      *
-     * @return JsonResponse
+     * @return Response
      */
     public function delete(Customer $customer)
     {
@@ -153,6 +163,9 @@ class CustomerController extends AbstractController
 
         $this->em->flush();
 
-        return new JsonResponse('Le client a été supprimé avec succès !', Response::HTTP_OK);
+        return new Response('Le client a été supprimé avec succès !', Response::HTTP_RESET_CONTENT, [
+            'Content-Type' => 'application/json'
+        ]);
+
     }
 }

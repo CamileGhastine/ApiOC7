@@ -15,6 +15,36 @@ use Hateoas\Configuration\Annotation as Hateoas;
 /**
  * @ORM\Entity(repositoryClass=CustomerRepository::class)
  * @UniqueEntity("email", message="ce courriel est déjà utilisé !")
+ * @Hateoas\Relation(
+ *     "self",
+ *     href = @Hateoas\Route(
+ *         "show_customer",
+ *         parameters = { "id" = "expr(object.getId())" }
+ *     ),
+ *     embedded = "expr(object.getPhones())",
+ *     exclusion = @Hateoas\Exclusion(groups = "detail")
+ * )
+ * @Hateoas\Relation(
+ *     "update",
+ *     href = @Hateoas\Route("update_customer",
+ *     parameters = { "id" = "expr(object.getId())" }),
+ *     exclusion = @Hateoas\Exclusion(groups = "detail")
+ * )
+ * @Hateoas\Relation(
+ *     "delete",
+ *     href = @Hateoas\Route("delete_customer",
+ *     parameters = { "id" = "expr(object.getId())" }),
+ *     exclusion = @Hateoas\Exclusion(groups = "detail")
+ * )
+ * @Hateoas\Relation(
+ *     "self",
+ *     href = @Hateoas\Route(
+ *         "show_customer",
+ *         parameters = { "id" = "expr(object.getId())" }
+ *     ),
+ *     embedded = "expr(object.getPhones())",
+ *     exclusion = @Hateoas\Exclusion(groups = "list")
+ * )
  */
 class Customer
 {
@@ -108,7 +138,6 @@ class Customer
 
     /**
      * @ORM\ManyToMany(targetEntity=Phone::class, inversedBy="customers")
-     * @Serializer\Groups({"detail"})
      */
     private $phones;
 
@@ -253,5 +282,4 @@ class Customer
 
         return $this;
     }
-
 }
