@@ -27,17 +27,39 @@ class CustomerRepository extends ServiceEntityRepository
      *
      * @return Paginator
      */
-    public function findCustomerPaginated(array $parameters)
+    public function findCustomersPaginated(array $parameters, int $userId)
     {
         extract($parameters);
 
         $query = $this->createQueryBuilder('p')
+            ->leftJoin('p.users', 'u')
+            -> where('u.id = :userId')
+            ->setParameter('userId', $userId)
             ->setFirstResult(($page-1)*$maxResult)
             ->setMaxResults($maxResult)
             ->orderBy('p.id', 'ASC')
             ->getQuery();
 
         return new Paginator($query);
+    }
+
+    /**
+     * @param int $id
+     * @param int $userId
+     *
+     * @return int|mixed|string
+     */
+    public function findCustomerByUser(int $id, int $userId)
+    {
+        return $query = $this->createQueryBuilder('c')
+            ->leftJoin('c.users', 'u')
+            ->where('c.id = :id')
+            ->andWhere('u.id = :userId')
+            ->setParameter('userId', $userId)
+            ->setParameter('id', $id)
+            ->getQuery()
+            ->getResult();
+
     }
 
     /**

@@ -66,7 +66,7 @@ class CustomerController extends AbstractController
             return new JsonResponse($data, Response::HTTP_BAD_REQUEST);
         }
 
-        $customer = $customerRepository->findCustomerPaginated($parameters);
+        $customer = $customerRepository->findCustomersPaginated($parameters, $this->getUser()->getId());
 
         $data = $this->serializer->serialize($customer->getIterator(), 'json', SerializationContext::create()->setGroups(['list']));
 
@@ -75,16 +75,24 @@ class CustomerController extends AbstractController
         ]);
     }
 
+
     /**
      * @Route("/customers/{id<\d+>}", name="show_customer", methods={"GET"})
      *
-     * @param Customer $customer
+     * @param int $id
+     * @param CustomerRepository $customerRepository
      *
      * @return Response
      */
-    public function show(Customer $customer)
+    public function show(int $id, CustomerRepository $customerRepository)
     {
+        $customer = $customerRepository->findCustomerByUser($id, $this->getUser()->getId());
+
         $data = $this->serializer->serialize($customer, 'json', SerializationContext::create()->setGroups(['detail']));
+
+        if($data === "[]") {
+            $data = "Ce client n'existe pas pour cet utilisateur.";
+        }
 
         return new Response($data, Response::HTTP_OK, [
             'Content-Type' => 'application/json'
