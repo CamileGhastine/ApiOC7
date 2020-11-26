@@ -17,7 +17,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 /**
  * Class SecurityController
  *
- * @Route("/api")
+ * @Route("/api/v1")
  *
  * @package App\Controller
  */

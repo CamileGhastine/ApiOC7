@@ -22,7 +22,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 /**
  * Class CustomerController
  *
- * @Route("/api")
+ * @Route("/api/v1")
  *
  * @package App\Controller
  */

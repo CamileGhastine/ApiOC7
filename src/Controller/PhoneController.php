@@ -18,7 +18,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * Class PhoneController
- * @Route("/api")
+ * @Route("/api/v1")
  * @package App\Controller
  */
 class PhoneController extends AbstractController

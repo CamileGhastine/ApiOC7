@@ -15,14 +15,14 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         register:
-            pattern: ^/api/register
+            pattern: ^/api/v1/register
             security: false
         login:
-            pattern:  ^/api/login
+            pattern:  ^/api/v1/login
             stateless: true
             anonymous: true
             json_login:
-                check_path:               /api/login_check
+                check_path:               /api/v1/login_check
                 success_handler:          lexik_jwt_authentication.handler.authentication_success
                 failure_handler:          lexik_jwt_authentication.handler.authentication_failure
         api:
