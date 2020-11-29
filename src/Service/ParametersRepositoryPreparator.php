@@ -34,7 +34,7 @@ class ParametersRepositoryPreparator
     {
         $this->queryPage = $request->query->get('page');
         $page = 1;
-        $maxResult = null;
+        $maxResult = $parameterMaxResult;
 
         //Page
         if ($this->queryPage !== null) {
@@ -65,7 +65,7 @@ class ParametersRepositoryPreparator
     {
         $this->queryPage = $request->query->get('page');
         $page = 1;
-        $maxResult = null;
+        $maxResult = $parameterMaxResult;
         $brand = empty($request->query->get('brand')) ? null : $request->query->get('brand');
         $price = [0, 10000];
 
@@ -75,9 +75,8 @@ class ParametersRepositoryPreparator
         }
 
         //Page
-        if ($this->queryPage !== null && count($price) === 2) {
+        if ($this->queryPage !== null) {
             $page = $this->preparePage($parameterMaxResult, $brand, $price);
-            $maxResult = $parameterMaxResult;
         }
 
         // Errors
@@ -150,7 +149,7 @@ class ParametersRepositoryPreparator
         // regex should be of type [minPrice] or [inPrice, maxPrice]
         if (!preg_match('#(^\[\d+( )?(,( )?\d+)?\])$#', $price)) {
             return [
-                'error' => 'L\'intervalle de prix n\'a pas le bon format : [prixMin] ou [prixMin, prixMax]'
+                'error' => 'L\'intervalle de prix n\'a pas le bon format : ?price=[prixMin] ou ?price=[prixMin, prixMax]'
             ];
         }
 
