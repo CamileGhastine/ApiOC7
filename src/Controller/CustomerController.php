@@ -70,6 +70,15 @@ class CustomerController extends AbstractController
 
         $data = $this->serializer->serialize($customer->getIterator(), 'json', SerializationContext::create()->setGroups(['list']));
 
+        if($data === "[]") {
+            $data = [
+                'status' => Response::HTTP_NO_CONTENT,
+                'message' => "Aucun client pour cet utilisateur."
+            ];
+
+            return new JsonResponse($data, Response::HTTP_NO_CONTENT);
+        }
+
         return new Response($data, Response::HTTP_OK, [
             'Content-Type' => 'application/json'
         ]);
@@ -91,7 +100,12 @@ class CustomerController extends AbstractController
         $data = $this->serializer->serialize($customer, 'json', SerializationContext::create()->setGroups(['detail']));
 
         if($data === "[]") {
-            $data = "Ce client n'existe pas pour cet utilisateur.";
+            $data = [
+                'status' => Response::HTTP_NO_CONTENT,
+                'message' => "Ce client n'existe pas pour cet utilisateur."
+            ];
+
+            return new JsonResponse($data, Response::HTTP_NO_CONTENT);
         }
 
         return new Response($data, Response::HTTP_OK, [
@@ -108,6 +122,15 @@ class CustomerController extends AbstractController
      */
     public function new(Request $request)
     {
+        if($request->getContent() === "") {
+            $data = [
+                'status' => Response::HTTP_BAD_REQUEST,
+                'message' => "Le courriel, le nom, le prénom, l'adresse, le code postal et la ville au format json sont obligatoires !"
+            ];
+
+            return new JsonResponse($data, Response::HTTP_BAD_REQUEST);
+        }
+
         $customer = $this->serializer->deserialize($request->getContent(), Customer::class, 'json');
 
         $errors = $this->validator->validate($customer);
@@ -139,6 +162,15 @@ class CustomerController extends AbstractController
      */
     public function update(Customer $customer, Request $request, SetCustomer $setCustomer)
     {
+        if($request->getContent() === "") {
+            $data = [
+                'status' => Response::HTTP_BAD_REQUEST,
+                'message' => "Aucune information entrée pour la modification."
+            ];
+
+            return new JsonResponse($data, Response::HTTP_BAD_REQUEST);
+        }
+
         $setCustomer->set($request, $customer);
 
         $errors = $this->validator->validate($customer);

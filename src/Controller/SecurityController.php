@@ -46,6 +46,15 @@ class SecurityController extends AbstractController
      */
     public function register(Request $request, SetUser $setUser)
     {
+        if($request->getContent() === "") {
+            $data = [
+                'status' => Response::HTTP_BAD_REQUEST,
+                'message' => "Les clefs username et password au format json sont obligatoires !"
+            ];
+
+            return new JsonResponse($data, Response::HTTP_BAD_REQUEST);
+        }
+
         $user = $this->serializer->deserialize($request->getContent(), User::class, 'json');
 
         if (!$user->getUsername() || !$user->getPassword()) {

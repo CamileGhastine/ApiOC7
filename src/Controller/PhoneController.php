@@ -61,6 +61,15 @@ class PhoneController extends AbstractController
 
         $data = $this->serializer->serialize($phone->getIterator(), 'json', SerializationContext::create()->setGroups(['list']));
 
+        if($data === "[]") {
+            $data = [
+                'status' => Response::HTTP_NO_CONTENT,
+                'message' => "Aucun téléphone trouvé pour ces critères de recherche."
+            ];
+
+            return new JsonResponse($data, Response::HTTP_NO_CONTENT);
+        }
+
         return new Response($data, Response::HTTP_OK, ['Content-TYpe' => 'application/json']);
 
     }
