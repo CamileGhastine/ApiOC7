@@ -59,7 +59,7 @@ class Customer
     /**
      * @ORM\Column(type="string", length=255)
      * @Serializer\Groups({"detail", "list"})
-     * @Assert\NotBlank(message= "Le champs prénom ne peut pas être vide.")
+     * @Assert\NotBlank(message= "Le champs email ne peut pas être vide.")
      * @Assert\Email
      */
     private $email;
@@ -69,6 +69,7 @@ class Customer
      * @Serializer\Groups({"detail", "list"})
      * @SerializedName("firstName")
      * @Assert\NotBlank(message= "Le champs prénom ne peut pas être vide.")
+     * @Assert\Regex("/^[a-zA-Z_]([a-zA-Z_](\s|-)?)+[a-zA-Z_]+$/", message="Le champs prénom n'a pas le bon format ")
      * @Assert\Length(
      *      min = 2,
      *      max = 50,
@@ -84,6 +85,7 @@ class Customer
      * @Serializer\Groups({"detail", "list"})
      * @SerializedName("lastName")
      * @Assert\NotBlank(message= "Le champs nom ne peut pas être vide.")
+     * @Assert\Regex("/^[a-zA-Z_]([a-zA-Z_](\s|-)?)+[a-zA-Z_]+$/", message="Le champs nom n'a pas le bon format ")
      * @Assert\Length(
      *      min = 2,
      *      max = 50,
@@ -98,6 +100,7 @@ class Customer
      * @ORM\Column(type="string", length=255)
      * @Serializer\Groups({"detail"})
      * @Assert\NotBlank(message= "Le champs adresse ne peut pas être vide.")
+     * @Assert\Regex("/\w+/", message="Le champs adresse n'a pas le bon format ")
      * @Assert\Length(
      *      min = 2,
      *      max = 255,
@@ -126,6 +129,7 @@ class Customer
      * @ORM\Column(type="string", length=255)
      * @Serializer\Groups({"detail"})
      * @Assert\NotBlank(message= "Le champs ville ne peut pas être vide.")
+     * @Assert\Regex("/^[a-zA-Z_]([a-zA-Z_](\s|-)?)+[a-zA-Z_]+$/", message="Le champs ville n'a pas le bon format ")
      * @Assert\Length(
      *      min = 2,
      *      max = 50,

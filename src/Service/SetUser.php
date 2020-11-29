@@ -20,8 +20,18 @@ class SetUser
         $this->validator = $validator;
         $this->passwordEncoder = $passwordEncoder;
     }
+
+    /**
+     * @param User $user
+     *
+     * @return string[]|\Symfony\Component\Validator\ConstraintViolationListInterface
+     */
     public function set(User $user)
     {
+        if(!preg_match("#(?=.*\d)(?=.*[A-Z])(?=.*[a-z])([-+!*$@%_\w]{6,20})$#",$user->getPassword())) {
+            return ["message" => "Le champs password doit comporter entre 6 et 20 caractères dont une majuscule, une minuscule et un chiffre"];
+        }
+
         $user->setPassword($this->passwordEncoder->encodePassword($user, $user->getPassword()));
         $user->setRoles($user->getRoles());
 
