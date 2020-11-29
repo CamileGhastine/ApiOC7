@@ -25,9 +25,8 @@ class CustomerFixtures extends Fixture implements DependentFixtureInterface
                 ->setAddress($faker->streetAddress)
                 ->setPostCode(rand(10000, 99999))
                 ->setCity($faker->city)
-                ->getUsers($this->getReference('client-'.rand(1, 2)))
+                ->addUser($this->getReference('client-'.rand(1, 2)))
             ;
-
             $this->addReference('customer-'.$i, $customer);
 
             $manager->persist($customer);
