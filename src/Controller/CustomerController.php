@@ -54,7 +54,7 @@ class CustomerController extends AbstractController
      */
     public function index(Request $request, CustomerRepository $customerRepository, ParametersRepositoryPreparator $preparator)
     {
-        $parameters = $preparator->prepareParametersCustomer($request, $this->getParameter('paginator.maxResult'));
+        $parameters = $preparator->prepareParametersCustomer($request, $this->getUser()->getId(), $this->getParameter('paginator.maxResult'));
 
         // if $page have message error
         if (isset($parameters['error'])) {

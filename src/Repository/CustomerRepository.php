@@ -68,10 +68,13 @@ class CustomerRepository extends ServiceEntityRepository
      * @throws NoResultException
      * @throws NonUniqueResultException
      */
-    public function countAll()
+    public function countAll($userId)
     {
         return $query = $this->createQueryBuilder('c')
             ->select('COUNT(c)')
+            ->leftJoin('c.users', 'u')
+            ->where('u.id = :userId')
+            ->setParameter('userId', $userId)
             ->getQuery()
             ->getSingleScalarResult()
             ;

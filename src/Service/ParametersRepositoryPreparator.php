@@ -30,7 +30,7 @@ class ParametersRepositoryPreparator
      * @throws NoResultException
      * @throws NonUniqueResultException
      */
-    public function prepareParametersCustomer(Request $request, int $parameterMaxResult) : array
+    public function prepareParametersCustomer(Request $request, int $userId, int $parameterMaxResult) : array
     {
         $this->queryPage = $request->query->get('page');
         $page = 1;
@@ -38,7 +38,7 @@ class ParametersRepositoryPreparator
 
         //Page
         if ($this->queryPage !== null) {
-            $page = $this->preparePage($parameterMaxResult, null, null, true);
+            $page = $this->preparePage($parameterMaxResult, null, null, $userId);
             $maxResult = $parameterMaxResult;
         }
 
@@ -98,7 +98,7 @@ class ParametersRepositoryPreparator
      * @throws NoResultException
      * @throws NonUniqueResultException
      */
-    private function preparePage(?int $maxResult, ?string $brand, ?array $price, bool $customer = false)
+    private function preparePage(?int $maxResult, ?string $brand, ?array $price, ?int $userId = null)
     {
         if (!empty($this->queryPage) && !preg_match('#(^-?(\d+))$#', $this->queryPage)) {
             return $page = [
@@ -108,7 +108,7 @@ class ParametersRepositoryPreparator
 
         $page = (int)$this->queryPage > 1 ? (int)$this->queryPage : 1 ;
 
-        $count =  $this->countAll($brand, $price, $customer);
+        $count =  $this->countAll($brand, $price, $userId);
 
         if ($page > $count/$maxResult) {
             $page = (int)ceil($count/$maxResult);
@@ -131,10 +131,10 @@ class ParametersRepositoryPreparator
      * @throws NoResultException
      * @throws NonUniqueResultException
      */
-    private function countAll(?string $brand, ?array $price, bool $customer)
+    private function countAll(?string $brand, ?array $price, ?int $userId)
     {
-        if ($customer) {
-            return $this->customerRepository->countAll();
+        if ($userId) {
+            return $this->customerRepository->countAll($userId);
         }
 
         return $this->phoneRepository->countAll($brand, $price);
