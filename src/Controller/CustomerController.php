@@ -72,11 +72,11 @@ class CustomerController extends AbstractController
 
         if($data === "[]") {
             $data = [
-                'status' => Response::HTTP_NO_CONTENT,
+                'status' => Response::HTTP_OK,
                 'message' => "Aucun client pour cet utilisateur."
             ];
 
-            return new JsonResponse($data, Response::HTTP_NO_CONTENT);
+            return new JsonResponse($data, Response::HTTP_OK);
         }
 
         return new Response($data, Response::HTTP_OK, [
@@ -101,11 +101,11 @@ class CustomerController extends AbstractController
 
         if($data === "[]") {
             $data = [
-                'status' => Response::HTTP_NO_CONTENT,
+                'status' => Response::HTTP_OK,
                 'message' => "Ce client n'existe pas pour cet utilisateur."
             ];
 
-            return new JsonResponse($data, Response::HTTP_NO_CONTENT);
+            return new JsonResponse($data, Response::HTTP_OK);
         }
 
         return new Response($data, Response::HTTP_OK, [

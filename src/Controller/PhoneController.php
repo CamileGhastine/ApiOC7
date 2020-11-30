@@ -63,11 +63,11 @@ class PhoneController extends AbstractController
 
         if($data === "[]") {
             $data = [
-                'status' => Response::HTTP_NO_CONTENT,
+                'status' => Response::HTTP_OK,
                 'message' => "Aucun téléphone trouvé pour ces critères de recherche."
             ];
 
-            return new JsonResponse($data, Response::HTTP_NO_CONTENT);
+            return new JsonResponse($data, Response::HTTP_OK);
         }
 
         return new Response($data, Response::HTTP_OK, ['Content-TYpe' => 'application/json']);
