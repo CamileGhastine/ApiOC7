@@ -21,9 +21,12 @@ class ExceptionSubscriber implements EventSubscriberInterface
     {
         $exception = $event->getThrowable();
 
-//        if (!($exception instanceof NotFoundHttpException) && !($exception instanceof ErrorException) && !($exception instanceof MethodNotAllowedHttpException) && !($exception instanceof BadRequestHttpException)) {
-//            return ;
-//        }
+        if (!($exception instanceof NotFoundHttpException) &&
+            !($exception instanceof ErrorException) &&
+            !($exception instanceof MethodNotAllowedHttpException) &&
+            !($exception instanceof BadRequestHttpException)) {
+            return ;
+        }
 
         if ($exception instanceof NotFoundHttpException) {
             $data = $this->getDataForNotFoundHttpException($exception);
@@ -43,8 +46,6 @@ class ExceptionSubscriber implements EventSubscriberInterface
         $response = new JsonResponse($data, $data['status']);
 
         $event->setResponse($response);
-
-        return;
     }
 
     /**
