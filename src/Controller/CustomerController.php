@@ -172,6 +172,15 @@ class CustomerController extends AbstractController
             return new JsonResponse($data, Response::HTTP_BAD_REQUEST);
         }
 
+        if($customer->getUser() !== $this->getUser()) {
+            $data = [
+                'status' => Response::HTTP_OK,
+                'message' => "Ce client n'existe pas pour cet utilisateur."
+            ];
+
+            return new JsonResponse($data, Response::HTTP_OK);
+        }
+
         $setCustomer->set($request, $customer);
 
         $errors = $this->validator->validate($customer);
@@ -200,6 +209,15 @@ class CustomerController extends AbstractController
      */
     public function delete(Customer $customer)
     {
+        if($customer->getUser() !== $this->getUser()) {
+            $data = [
+                'status' => Response::HTTP_OK,
+                'message' => "Ce client n'existe pas pour cet utilisateur."
+            ];
+
+            return new JsonResponse($data, Response::HTTP_OK);
+        }
+
         $this->em->remove($customer);
 
         $this->em->flush();
