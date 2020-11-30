@@ -32,7 +32,7 @@ class CustomerRepository extends ServiceEntityRepository
         extract($parameters);
 
         $query = $this->createQueryBuilder('p')
-            ->leftJoin('p.users', 'u')
+            ->leftJoin('p.user', 'u')
             -> where('u.id = :userId')
             ->setParameter('userId', $userId)
             ->setFirstResult(($page-1)*$maxResult)
@@ -52,7 +52,7 @@ class CustomerRepository extends ServiceEntityRepository
     public function findCustomerByUser(int $id, int $userId)
     {
         return $query = $this->createQueryBuilder('c')
-            ->leftJoin('c.users', 'u')
+            ->leftJoin('c.user', 'u')
             ->where('c.id = :id')
             ->andWhere('u.id = :userId')
             ->setParameter('userId', $userId)
@@ -72,7 +72,7 @@ class CustomerRepository extends ServiceEntityRepository
     {
         return $query = $this->createQueryBuilder('c')
             ->select('COUNT(c)')
-            ->leftJoin('c.users', 'u')
+            ->leftJoin('c.user', 'u')
             ->where('u.id = :userId')
             ->setParameter('userId', $userId)
             ->getQuery()

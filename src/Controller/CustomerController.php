@@ -132,6 +132,7 @@ class CustomerController extends AbstractController
         }
 
         $customer = $this->serializer->deserialize($request->getContent(), Customer::class, 'json');
+        $customer->setUser($this->getUser());
 
         $errors = $this->validator->validate($customer);
 
