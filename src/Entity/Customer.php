@@ -14,7 +14,7 @@ use Hateoas\Configuration\Annotation as Hateoas;
 
 /**
  * @ORM\Entity(repositoryClass=CustomerRepository::class)
- * @UniqueEntity("email", message="ce courriel est déjà utilisé !")
+ * @UniqueEntity(fields={"email", "user"}, message="ce courriel est déjà utilisé !")
  * @Hateoas\Relation(
  *     "self",
  *     href = @Hateoas\Route(
