@@ -8,9 +8,11 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
 use Hateoas\Configuration\Annotation as Hateoas;
+use OpenApi\Annotations as OA;
 
 /**
  * @ORM\Entity(repositoryClass=PhoneRepository::class)
+ *
  * @Hateoas\Relation(
  *     "self",
  *     href = @Hateoas\Route("show_phone",
@@ -23,6 +25,8 @@ use Hateoas\Configuration\Annotation as Hateoas;
  *     parameters = { "id" = "expr(object.getId())" }),
  *     exclusion = @Hateoas\Exclusion(groups = "list"),
  * )
+ *
+ * @OA\Schema()
  */
 class Phone
 {
@@ -30,36 +34,64 @@ class Phone
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     *
      * @Serializer\Groups({"detail", "list"})
+     *
+     * @OA\Property(type="integer")
+     *
+     * @var int
      */
+
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     *
      * @Serializer\Groups({"detail", "list"})
+     *
+     * @OA\Property(type="string")
+     *
+     * @var string
      */
     private $brand;
 
     /**
      * @ORM\Column(type="string", length=255)
+     *
      * @Serializer\Groups({"detail", "list"})
+     *
+     * @OA\Property(type="string")
+     *
+     * @var string
      */
     private $model;
 
     /**
      * @ORM\Column(type="integer")
+     *
      * @Serializer\Groups({"detail", "list"})
+     *
+     * @OA\Property(type="integer")
+     *
+     * @var int
      */
     private $price;
 
     /**
      * @ORM\Column(type="text")
+     *
      * @Serializer\Groups({"detail"})
+     *
+     * @OA\Property(type="string")
+     *
+     * @var string
      */
     private $description;
 
     /**
      * @ORM\ManyToMany(targetEntity=Customer::class, mappedBy="phones")
+     *
+     * @var ArrayCollection
      */
     private $customers;
 

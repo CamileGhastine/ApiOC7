@@ -1,4 +1,4 @@
-Créer un clef SSL (la doc de LexikJWTAuthenticationBundle):
+Créer un clef SSL (doc de LexikJWTAuthenticationBundle):
 
 - Ouvrir la console GitBash (qui simule un environement linux)
 - Se placer à la racine du projet et créer un repertoire :
@@ -16,3 +16,8 @@ Résolution : Je suis passé par le serveur dev de symfony pour générer un cer
 
 Rq: si git bash ne fonctionne pas pour la création des clefs, passer par ubuntu
 
+
+SWAGGER
+créer le fichier (yaml ou json) générant la doc avec :
+./vendor/bin/openapi --format yaml --output ./swagger/swagger.yaml ./swagger/swagger.php src
+./vendor/bin/openapi --format json --output ./swappger/swagger.json ./swagger/swagger.php src

@@ -5,46 +5,41 @@ info:
 servers:
   -
     url: 'http://127.0.0.1:8000/api/v1'
-    description: 'Api for Phones Catalogue in B2B'
+    description: 'Api for Phones Catalog in B2B'
 paths:
   /phones:
     get:
       operationId: 'App\Controller\PhoneController::index'
-      parameters:
-        -
-          name: page
-          in: query
-          description: 'page of the catalog'
-          required: false
       responses:
         '200':
-          description: 'list phones'
+          description: 'list of phones'
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Phone'
-  '/phones/{id}':
-    get:
-      operationId: 'App\Controller\PhoneController::show'
-      parameters:
-        -
-          name: id
-          in: path
-          description: ''
-          required: true
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: 'show phone'
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Phone'
+                type: string
 components:
   schemas:
+    Customer:
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        address:
+          type: string
+        postCode:
+          type: integer
+        city:
+          type: string
+        phones:
+          type: array
+          items:
+            $ref: '#/components/schemas/Phone'
+      type: object
     Phone:
       properties:
         id:
@@ -57,5 +52,4 @@ components:
           type: integer
         description:
           type: string
-          nullable: true
       type: object

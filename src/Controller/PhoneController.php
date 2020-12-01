@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use OpenApi\Annotations as OA;
 
 /**
  * Class PhoneController
@@ -33,12 +34,20 @@ class PhoneController extends AbstractController
 
     /**
      * @Route("/phones", name="list_phone", methods={"GET"})
+     * @OA\Get(
+     *     path="/phones",
+     *     @OA\Response(
+     *          response="200",
+     *          description="list of phones",
+     *          @OA\JsonContent(type="string")
+     *     )
+     * )
      *
      * @param Request $request
      * @param PhoneRepository $phoneRepository
      * @param ParametersRepositoryPreparator $preparator
-     *
      * @param DataPaginator $dataPaginator
+     *
      * @return Response
      *
      * @throws NoResultException
