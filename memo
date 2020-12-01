@@ -17,7 +17,10 @@ Résolution : Je suis passé par le serveur dev de symfony pour générer un cer
 Rq: si git bash ne fonctionne pas pour la création des clefs, passer par ubuntu
 
 
-SWAGGER
-créer le fichier (yaml ou json) générant la doc avec :
-./vendor/bin/openapi --format yaml --output ./swagger/swagger.yaml ./swagger/swagger.php src
-./vendor/bin/openapi --format json --output ./swappger/swagger.json ./swagger/swagger.php src
+DOC SWAGGER
+Téléacharger sawgger-ui et placer le constenu du dossier dist dans public/swagger.
+Modifier le fichier index.html pour lui dire de charger le fichier swagger.json
+créer le fichier json générant la doc avec :
+ ./vendor/bin/openapi --format json --output ./public/swagger/swagger.json ./swagger/swagger.php src
+ voir la doc dans le navigateur : https://127.0.0.1:8000/swagger/
+
