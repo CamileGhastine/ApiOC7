@@ -38,6 +38,7 @@ class PhoneController extends AbstractController
      * @param PhoneRepository $phoneRepository
      * @param ParametersRepositoryPreparator $preparator
      *
+     * @param DataPaginator $dataPaginator
      * @return Response
      *
      * @throws NoResultException
@@ -58,15 +59,11 @@ class PhoneController extends AbstractController
             return new JsonResponse($data, Response::HTTP_BAD_REQUEST);
         }
 
-//        $phone = $phoneRepository->findPhonePaginated($parameters);
-//
-//        $data = $this->serializer->serialize($phone->getIterator(), 'json', SerializationContext::create()->setGroups(['list']));
-
-        $data = $dataPaginator->paginate ($phoneRepository->findPhonePaginated($parameters)->getIterator(), $parameters);
+        $data = $dataPaginator->paginate($phoneRepository->findPhonePaginated($parameters)->getIterator(), $parameters);
 
         $data = $this->serializer->serialize($data, 'json', SerializationContext::create()->setGroups(['list']));
 
-        if($data === "[]") {
+        if ($data === "[]") {
             $data = [
                 'status' => Response::HTTP_OK,
                 'message' => "Aucun téléphone trouvé pour ces critères de recherche."
@@ -76,7 +73,6 @@ class PhoneController extends AbstractController
         }
 
         return new Response($data, Response::HTTP_OK, ['Content-TYpe' => 'application/json']);
-
     }
 
     /**

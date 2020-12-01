@@ -15,12 +15,12 @@ class DataPaginator
      *
      * @return mixed
      */
-    public function paginate ($entities, $parameters)
+    public function paginate($entities, $parameters)
     {
         $prev = $parameters['page'] === 1 ? 1 : $parameters['page']-1;
         $last = (int)ceil($parameters['count'] / $parameters['maxResult']);
         $next = $parameters['page'] === $last ? $last : $parameters['page']+1;
-        $class = lcfirst(str_replace("App\\Entity\\","",get_class($entities[0]))).'s';
+        $class = lcfirst(str_replace("App\\Entity\\", "", get_class($entities[0]))).'s';
 
         $pagination = [
             "pagination" => [

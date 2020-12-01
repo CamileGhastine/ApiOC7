@@ -70,7 +70,7 @@ class CustomerController extends AbstractController
 
         $data = $this->serializer->serialize($data, 'json', SerializationContext::create()->setGroups(['list']));
 
-        if($data === "[]") {
+        if ($data === "[]") {
             $data = [
                 'status' => Response::HTTP_OK,
                 'message' => "Aucun client pour cet utilisateur."
@@ -99,7 +99,7 @@ class CustomerController extends AbstractController
 
         $data = $this->serializer->serialize($customer, 'json', SerializationContext::create()->setGroups(['detail']));
 
-        if($data === "[]") {
+        if ($data === "[]") {
             $data = [
                 'status' => Response::HTTP_OK,
                 'message' => "Ce client n'existe pas pour cet utilisateur."
@@ -122,7 +122,7 @@ class CustomerController extends AbstractController
      */
     public function new(Request $request)
     {
-        if($request->getContent() === "") {
+        if ($request->getContent() === "") {
             $data = [
                 'status' => Response::HTTP_BAD_REQUEST,
                 'message' => "Le courriel, le nom, le prénom, l'adresse, le code postal et la ville au format json sont obligatoires !"
@@ -163,7 +163,7 @@ class CustomerController extends AbstractController
      */
     public function update(Customer $customer, Request $request, SetCustomer $setCustomer)
     {
-        if($request->getContent() === "") {
+        if ($request->getContent() === "") {
             $data = [
                 'status' => Response::HTTP_BAD_REQUEST,
                 'message' => "Aucune information entrée pour la modification."
@@ -172,7 +172,7 @@ class CustomerController extends AbstractController
             return new JsonResponse($data, Response::HTTP_BAD_REQUEST);
         }
 
-        if($customer->getUser() !== $this->getUser()) {
+        if ($customer->getUser() !== $this->getUser()) {
             $data = [
                 'status' => Response::HTTP_OK,
                 'message' => "Ce client n'existe pas pour cet utilisateur."
@@ -209,7 +209,7 @@ class CustomerController extends AbstractController
      */
     public function delete(Customer $customer)
     {
-        if($customer->getUser() !== $this->getUser()) {
+        if ($customer->getUser() !== $this->getUser()) {
             $data = [
                 'status' => Response::HTTP_OK,
                 'message' => "Ce client n'existe pas pour cet utilisateur."
@@ -225,6 +225,5 @@ class CustomerController extends AbstractController
         return new Response('Le client a été supprimé avec succès !', Response::HTTP_RESET_CONTENT, [
             'Content-Type' => 'application/json'
         ]);
-
     }
 }

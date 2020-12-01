@@ -25,6 +25,7 @@ class CustomerRepository extends ServiceEntityRepository
     /**
      * @param array $parameters
      *
+     * @param int $userId
      * @return Paginator
      */
     public function findCustomersPaginated(array $parameters, int $userId)
@@ -59,10 +60,10 @@ class CustomerRepository extends ServiceEntityRepository
             ->setParameter('id', $id)
             ->getQuery()
             ->getResult();
-
     }
 
     /**
+     * @param $userId
      * @return int|mixed|string
      *
      * @throws NoResultException

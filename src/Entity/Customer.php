@@ -174,7 +174,6 @@ class Customer
     public function __construct()
     {
         $this->phones = new ArrayCollection();
-        $this->users = new ArrayCollection();
     }
 
     public function getId(): ?int

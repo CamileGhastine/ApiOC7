@@ -3,7 +3,6 @@
 namespace App\EventSubscriber;
 
 use ErrorException;
-use RuntimeException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -50,8 +49,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
 
     /**
      * @param $exception
-     *
-     * @return array
+     * @return array|void
      */
     private function getDataForNotFoundHttpException($exception)
     {
@@ -68,6 +66,8 @@ class ExceptionSubscriber implements EventSubscriberInterface
                 'message' => 'La ressource n\'existe pas.'
             ];
         }
+
+        return;
     }
 
     /**
