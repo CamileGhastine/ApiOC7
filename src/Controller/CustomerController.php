@@ -150,6 +150,26 @@ class CustomerController extends AbstractController
     /**
      * @Route("/customers", name="add_customer", methods={"POST"})
      *
+     * @OA\Post(
+     *     path="/customers",
+     *     tags={"Customer"},
+     *     @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *               required={"id", "email", "firstname", "lastName", "adress", "postCode", "city"},
+     *               ref="#/components/schemas/CustomerEdit"
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response="200",
+     *          description="Création d'un client",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Le client a été ajouté avec succès !")
+     *          )
+     *     ),
+     *     @OA\Response(response="404", ref="#/components/responses/NotFound")
+     * )
+     *
      * @param Request $request
      *
      * @return Response
@@ -194,7 +214,7 @@ class CustomerController extends AbstractController
      *     tags={"Customer"},
      *     @OA\RequestBody(
      *          required=true,
-     *          @OA\JsonContent(ref="#/components/schemas/Customer")
+     *          @OA\JsonContent(ref="#/components/schemas/CustomerEdit")
      *     ),
      *     @OA\Parameter(ref="#/components/parameters/id"),
      *     @OA\Response(
@@ -254,6 +274,20 @@ class CustomerController extends AbstractController
 
     /**
      * @Route("/customers/{id<\d+>}", name="delete_customer", methods={"DELETE"})
+     *
+     * @OA\Delete(
+     *     path="/customers/{id}",
+     *     tags={"Customer"},
+     *     @OA\Parameter(ref="#/components/parameters/id"),
+     *     @OA\Response(
+     *          response="200",
+     *          description="Supression d'un client",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Le client a été supprimé avec succès !")
+     *          )
+     *     ),
+     *     @OA\Response(response="404", ref="#/components/responses/NotFound")
+     * )
      *
      * @param Customer $customer
      *

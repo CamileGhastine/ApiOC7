@@ -80,11 +80,17 @@ use OpenApi\Annotations as OA;
  *     schema="Customer",
  *     allOf={@OA\Schema(ref="#/components/schemas/CustomersList")},
  *     @OA\Property(type="string", property="adress"),
- *     @OA\Property(type="integer", property="PostCode"),
+ *     @OA\Property(type="integer", property="postCode"),
  *     @OA\Property(type="string", property="city"),
  *     @OA\Property(type="array", @OA\Items(ref="#/components/schemas/Phone"),  property="phones"),
  * )
-
+ * @OA\Schema(
+ *     schema="CustomerEdit",
+ *     allOf={@OA\Schema(ref="#/components/schemas/CustomersList")},
+ *     @OA\Property(type="string", property="adress"),
+ *     @OA\Property(type="integer", property="postCode"),
+ *     @OA\Property(type="string", property="city"),
+ * )
  */
 class Customer
 {

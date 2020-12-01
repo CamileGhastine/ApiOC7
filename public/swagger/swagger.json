@@ -43,6 +43,42 @@
                         }
                     }
                 }
+            },
+            "post": {
+                "tags": [
+                    "Customer"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CustomerEdit"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Création d'un client",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Le client a été ajouté avec succès !"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/NotFound"
+                    }
+                }
             }
         },
         "/customers/{id}": {
@@ -87,7 +123,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/Customer"
+                                "$ref": "#/components/schemas/CustomerEdit"
                             }
                         }
                     }
@@ -102,6 +138,38 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Le client a été modifié avec succès !"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/NotFound"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Customer"
+                ],
+                "operationId": "App\\Controller\\CustomerController::delete",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/id"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Supression d'un client",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Le client a été supprimé avec succès !"
                                         }
                                     },
                                     "type": "object"
@@ -221,7 +289,7 @@
                     "adress": {
                         "type": "string"
                     },
-                    "PostCode": {
+                    "postCode": {
                         "type": "integer"
                     },
                     "city": {
@@ -232,6 +300,25 @@
                         "items": {
                             "$ref": "#/components/schemas/Phone"
                         }
+                    }
+                },
+                "type": "object",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/CustomersList"
+                    }
+                ]
+            },
+            "CustomerEdit": {
+                "properties": {
+                    "adress": {
+                        "type": "string"
+                    },
+                    "postCode": {
+                        "type": "integer"
+                    },
+                    "city": {
+                        "type": "string"
                     }
                 },
                 "type": "object",
