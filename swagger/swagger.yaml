@@ -10,13 +10,55 @@ paths:
   /phones:
     get:
       operationId: 'App\Controller\PhoneController::index'
+      parameters:
+        -
+          name: page
+          in: query
+          description: 'Exemple : /phones?page=2'
+          required: false
+          schema:
+            type: integer
+        -
+          name: brand
+          in: query
+          description: 'Exemple : /phones?brand=samsung'
+          required: false
+          schema:
+            type: string
+        -
+          name: price
+          in: query
+          description: 'Syntaxe : /phones?price=[Xmin, Xmax] ou ?price=[Xmin]'
+          required: false
+          schema:
+            type: string
       responses:
         '200':
           description: 'list of phones'
           content:
             application/json:
               schema:
-                type: string
+                type: array
+                items:
+                  $ref: '#/components/schemas/Phone'
+  '/phones/{id}':
+    get:
+      operationId: 'App\Controller\PhoneController::show'
+      parameters:
+        -
+          name: id
+          in: path
+          description: 'id de la ressource'
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 'show phone'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Phone'
 components:
   schemas:
     Customer:

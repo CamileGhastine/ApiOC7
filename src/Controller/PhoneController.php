@@ -34,12 +34,34 @@ class PhoneController extends AbstractController
 
     /**
      * @Route("/phones", name="list_phone", methods={"GET"})
+     *
      * @OA\Get(
      *     path="/phones",
+     *     @OA\Parameter(
+     *          name="page",
+     *          in="query",
+     *          description="Exemple : /phones?page=2",
+     *          required = false,
+     *          @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *          name="brand",
+     *          in="query",
+     *          description="Exemple : /phones?brand=samsung",
+     *          required = false,
+     *          @OA\Schema(type="string"),
+     *     ),
+     *     @OA\Parameter(
+     *          name="price",
+     *          in="query",
+     *          description="Syntaxe : /phones?price=[Xmin, Xmax] ou ?price=[Xmin]",
+     *          required = false,
+     *          @OA\Schema(type="string")
+     *     ),
      *     @OA\Response(
      *          response="200",
      *          description="list of phones",
-     *          @OA\JsonContent(type="string")
+     *          @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Phone"))
      *     )
      * )
      *
@@ -87,6 +109,22 @@ class PhoneController extends AbstractController
 
     /**
      * @Route("/phones/{id<\d+>}", name="show_phone", methods={"GET"})
+     *
+     * @OA\Get(
+     *     path="/phones/{id}",
+     *     @OA\Parameter(
+     *          name="id",
+     *          in="path",
+     *          description="ID de la ressource",
+     *          required = true,
+     *          @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *          response="200",
+     *          description="show phone",
+     *          @OA\JsonContent(ref="#/components/schemas/Phone")
+     *     )
+     * )
      *
      * @param Phone $phone
      *
