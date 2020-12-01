@@ -11,6 +11,65 @@
         }
     ],
     "paths": {
+        "/customers": {
+            "get": {
+                "operationId": "App\\Controller\\CustomerController::index",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "example": "/customers?page=2"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Liste de clients",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/CustomersList"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/customers/{id}": {
+            "get": {
+                "operationId": "App\\Controller\\CustomerController::show",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "ID de la ressource",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Phone details",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Customer"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/phones": {
             "get": {
                 "operationId": "App\\Controller\\PhoneController::index",
@@ -18,20 +77,20 @@
                     {
                         "name": "page",
                         "in": "query",
-                        "description": "Exemple : /phones?page=2",
                         "required": false,
                         "schema": {
                             "type": "integer"
-                        }
+                        },
+                        "example": "/phones?page=2"
                     },
                     {
                         "name": "brand",
                         "in": "query",
-                        "description": "Exemple : /phones?brand=samsung",
                         "required": false,
                         "schema": {
                             "type": "string"
-                        }
+                        },
+                        "example": "/phones?brand=samsung"
                     },
                     {
                         "name": "price",
@@ -40,18 +99,19 @@
                         "required": false,
                         "schema": {
                             "type": "string"
-                        }
+                        },
+                        "example": "/phones?price=[500,1000]"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "list of phones",
+                        "description": "Liste de téléphones mobiles",
                         "content": {
                             "application/json": {
                                 "schema": {
                                     "type": "array",
                                     "items": {
-                                        "$ref": "#/components/schemas/Phone"
+                                        "$ref": "#/components/schemas/PhonesList"
                                     }
                                 }
                             }
@@ -76,7 +136,7 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "show phone",
+                        "description": "Phone details",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -91,7 +151,7 @@
     },
     "components": {
         "schemas": {
-            "Customer": {
+            "CustomersList": {
                 "properties": {
                     "id": {
                         "type": "integer"
@@ -104,11 +164,16 @@
                     },
                     "lastName": {
                         "type": "string"
-                    },
-                    "address": {
+                    }
+                },
+                "type": "object"
+            },
+            "Customer": {
+                "properties": {
+                    "adress": {
                         "type": "string"
                     },
-                    "postCode": {
+                    "PostCode": {
                         "type": "integer"
                     },
                     "city": {
@@ -121,9 +186,14 @@
                         }
                     }
                 },
-                "type": "object"
+                "type": "object",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/CustomersList"
+                    }
+                ]
             },
-            "Phone": {
+            "PhonesList": {
                 "properties": {
                     "id": {
                         "type": "integer"
@@ -136,12 +206,22 @@
                     },
                     "price": {
                         "type": "integer"
-                    },
+                    }
+                },
+                "type": "object"
+            },
+            "Phone": {
+                "properties": {
                     "description": {
                         "type": "string"
                     }
                 },
-                "type": "object"
+                "type": "object",
+                "allOf": [
+                    {
+                        "$ref": "#/components/schemas/PhonesList"
+                    }
+                ]
             }
         }
     }

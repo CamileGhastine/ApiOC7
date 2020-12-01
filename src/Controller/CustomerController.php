@@ -19,6 +19,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use OpenApi\Annotations as OA;
 
 /**
  * Class CustomerController
@@ -42,6 +43,22 @@ class CustomerController extends AbstractController
 
     /**
      * @Route("/customers", name="list_customer", methods={"GET"})
+     *
+     * @OA\Get(
+     *     path="/customers",
+     *     @OA\Parameter(
+     *          name="page",
+     *          in="query",
+     *          example="/customers?page=2",
+     *          required = false,
+     *          @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *          response="200",
+     *          description="Liste de clients",
+     *          @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/CustomersList"))
+     *     )
+     * )
      *
      * @param Request $request
      * @param CustomerRepository $customerRepository
@@ -90,6 +107,22 @@ class CustomerController extends AbstractController
 
     /**
      * @Route("/customers/{id<\d+>}", name="show_customer", methods={"GET"})
+     *
+     * @OA\Get(
+     *     path="/customers/{id}",
+     *     @OA\Parameter(
+     *          name="id",
+     *          in="path",
+     *          description="ID de la ressource",
+     *          required = true,
+     *          @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *          response="200",
+     *          description="Phone details",
+     *          @OA\JsonContent(ref="#/components/schemas/Customer")
+     *     )
+     * )
      *
      * @param int $id
      * @param CustomerRepository $customerRepository

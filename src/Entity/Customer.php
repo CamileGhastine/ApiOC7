@@ -69,8 +69,22 @@ use OpenApi\Annotations as OA;
  *     parameters = { "id" = "expr(object.getId())" }),
  *     exclusion = @Hateoas\Exclusion(groups = "list")
  * )
- *
- * @OA\Schema()
+ * @OA\Schema(
+ *     schema="CustomersList",
+ *     @OA\Property(type="integer", property="id"),
+ *     @OA\Property(type="string", property="email"),
+ *     @OA\Property(type="string", property="firstName"),
+ *     @OA\Property(type="string", property="lastName"),
+ * )
+ * @OA\Schema(
+ *     schema="Customer",
+ *     allOf={@OA\Schema(ref="#/components/schemas/CustomersList")},
+ *     @OA\Property(type="string", property="adress"),
+ *     @OA\Property(type="integer", property="PostCode"),
+ *     @OA\Property(type="string", property="city"),
+ *     @OA\Property(type="array", @OA\Items(ref="#/components/schemas/Phone"),  property="phones"),
+ * )
+
  */
 class Customer
 {
@@ -80,8 +94,6 @@ class Customer
      * @ORM\Column(type="integer")
      *
      * @Serializer\Groups({"detail", "list"})
-     *
-     * @OA\Property(type="integer")
      *
      * @var int
      */
@@ -94,8 +106,6 @@ class Customer
      *
      * @Assert\NotBlank(message= "Le champs email ne peut pas être vide.")
      * @Assert\Email
-     *
-     * @OA\Property(type="string")
      *
      * @var string
      */
@@ -117,8 +127,6 @@ class Customer
      *      allowEmptyString = false
      * )
      *
-     * @OA\Property(type="string")
-     *
      * @var string
      */
     private $firstName;
@@ -139,8 +147,6 @@ class Customer
      *      allowEmptyString = false
      * )
      *
-     * @OA\Property(type="string")
-     *
      * @var string
      */
     private $lastName;
@@ -160,8 +166,6 @@ class Customer
      *      allowEmptyString = false
      * )
      *
-     * @OA\Property(type="string")
-     *
      * @var string
      */
     private $address;
@@ -179,8 +183,6 @@ class Customer
      *      exactMessage = "Le code postal doit comporter {{ limit }} chiffres",
      *      allowEmptyString = false
      * )
-     *
-     * @OA\Property(type="integer")
      *
      * @var int
      */
@@ -201,16 +203,12 @@ class Customer
      *      allowEmptyString = false
      * )
      *
-     * @OA\Property(type="string")
-     *
      * @var string
      */
     private $city;
 
     /**
      * @ORM\ManyToMany(targetEntity=Phone::class, inversedBy="customers")
-     *
-     * @OA\Property(type="array", @OA\Items(ref="#/components/schemas/Phone"))
      *
      * @var ArrayCollection
      */

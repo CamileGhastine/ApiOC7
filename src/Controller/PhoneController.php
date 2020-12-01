@@ -40,14 +40,14 @@ class PhoneController extends AbstractController
      *     @OA\Parameter(
      *          name="page",
      *          in="query",
-     *          description="Exemple : /phones?page=2",
+     *          example="/phones?page=2",
      *          required = false,
      *          @OA\Schema(type="integer")
      *     ),
      *     @OA\Parameter(
      *          name="brand",
      *          in="query",
-     *          description="Exemple : /phones?brand=samsung",
+     *          example="/phones?brand=samsung",
      *          required = false,
      *          @OA\Schema(type="string"),
      *     ),
@@ -55,13 +55,14 @@ class PhoneController extends AbstractController
      *          name="price",
      *          in="query",
      *          description="Syntaxe : /phones?price=[Xmin, Xmax] ou ?price=[Xmin]",
+     *     example="/phones?price=[500,1000]",
      *          required = false,
      *          @OA\Schema(type="string")
      *     ),
      *     @OA\Response(
      *          response="200",
-     *          description="list of phones",
-     *          @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/Phone"))
+     *          description="Liste de téléphones mobiles",
+     *          @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/PhonesList"))
      *     )
      * )
      *
@@ -121,7 +122,7 @@ class PhoneController extends AbstractController
      *     ),
      *     @OA\Response(
      *          response="200",
-     *          description="show phone",
+     *          description="Phone details",
      *          @OA\JsonContent(ref="#/components/schemas/Phone")
      *     )
      * )

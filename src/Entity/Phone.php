@@ -26,7 +26,18 @@ use OpenApi\Annotations as OA;
  *     exclusion = @Hateoas\Exclusion(groups = "list"),
  * )
  *
- * @OA\Schema()
+ * @OA\Schema(
+ *     schema="PhonesList",
+ *     @OA\Property(type="integer", property="id"),
+ *     @OA\Property(type="string", property="brand"),
+ *     @OA\Property(type="string", property="model"),
+ *     @OA\Property(type="integer", property="price"),
+ * )
+ * @OA\Schema(
+ *     schema="Phone",
+ *     allOf={@OA\Schema(ref="#/components/schemas/PhonesList")},
+ *     @OA\Property(type="string", property="description")
+ * )
  */
 class Phone
 {
@@ -37,7 +48,6 @@ class Phone
      *
      * @Serializer\Groups({"detail", "list"})
      *
-     * @OA\Property(type="integer")
      *
      * @var int
      */
@@ -49,7 +59,6 @@ class Phone
      *
      * @Serializer\Groups({"detail", "list"})
      *
-     * @OA\Property(type="string")
      *
      * @var string
      */
@@ -60,7 +69,6 @@ class Phone
      *
      * @Serializer\Groups({"detail", "list"})
      *
-     * @OA\Property(type="string")
      *
      * @var string
      */
@@ -71,7 +79,6 @@ class Phone
      *
      * @Serializer\Groups({"detail", "list"})
      *
-     * @OA\Property(type="integer")
      *
      * @var int
      */
@@ -82,7 +89,6 @@ class Phone
      *
      * @Serializer\Groups({"detail"})
      *
-     * @OA\Property(type="string")
      *
      * @var string
      */
