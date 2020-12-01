@@ -17,11 +17,15 @@ use Hateoas\Configuration\Annotation as Hateoas;
  * @UniqueEntity(fields={"email", "user"}, message="ce courriel est déjà utilisé !")
  * @Hateoas\Relation(
  *     "self",
- *     href = @Hateoas\Route(
- *         "show_customer",
+ *     href = @Hateoas\Route("show_customer",
  *         parameters = { "id" = "expr(object.getId())" }
  *     ),
  *     embedded = "expr(object.getPhones())",
+ *     exclusion = @Hateoas\Exclusion(groups = "detail")
+ * )
+ * @Hateoas\Relation(
+ *     "create",
+ *     href = @Hateoas\Route("add_customer"),
  *     exclusion = @Hateoas\Exclusion(groups = "detail")
  * )
  * @Hateoas\Relation(
@@ -38,11 +42,27 @@ use Hateoas\Configuration\Annotation as Hateoas;
  * )
  * @Hateoas\Relation(
  *     "self",
- *     href = @Hateoas\Route(
- *         "show_customer",
+ *     href = @Hateoas\Route("show_customer",
  *         parameters = { "id" = "expr(object.getId())" }
  *     ),
  *     embedded = "expr(object.getPhones())",
+ *     exclusion = @Hateoas\Exclusion(groups = "list")
+ * )
+ * @Hateoas\Relation(
+ *     "create",
+ *     href = @Hateoas\Route("add_customer"),
+ *     exclusion = @Hateoas\Exclusion(groups = "list")
+ * )
+ * @Hateoas\Relation(
+ *     "update",
+ *     href = @Hateoas\Route("update_customer",
+ *     parameters = { "id" = "expr(object.getId())" }),
+ *     exclusion = @Hateoas\Exclusion(groups = "list")
+ * )
+ * @Hateoas\Relation(
+ *     "delete",
+ *     href = @Hateoas\Route("delete_customer",
+ *     parameters = { "id" = "expr(object.getId())" }),
  *     exclusion = @Hateoas\Exclusion(groups = "list")
  * )
  */
