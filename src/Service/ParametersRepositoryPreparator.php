@@ -23,6 +23,7 @@ class ParametersRepositoryPreparator
 
     /**
      * @param Request $request
+     * @param int $userId
      * @param int $parameterMaxResult
      *
      * @return array|array[]|string[]
@@ -30,15 +31,16 @@ class ParametersRepositoryPreparator
      * @throws NoResultException
      * @throws NonUniqueResultException
      */
-    public function prepareParametersCustomer(Request $request, int $parameterMaxResult) : array
+    public function prepareParametersCustomer(Request $request, int $userId, int $parameterMaxResult) : array
     {
         $this->queryPage = $request->query->get('page');
         $page = 1;
-        $maxResult = null;
+        $maxResult = $parameterMaxResult;
+        $count =  $this->countAll(null, null, $userId);
 
         //Page
         if ($this->queryPage !== null) {
-            $page = $this->preparePage($parameterMaxResult, null, null, true);
+            $page = $this->preparePage($count, $parameterMaxResult);
             $maxResult = $parameterMaxResult;
         }
 
@@ -49,7 +51,7 @@ class ParametersRepositoryPreparator
             ]];
         }
 
-        return compact('page', 'maxResult');
+        return compact('page', 'maxResult', 'count');
     }
 
     /**
@@ -65,7 +67,7 @@ class ParametersRepositoryPreparator
     {
         $this->queryPage = $request->query->get('page');
         $page = 1;
-        $maxResult = null;
+        $maxResult = $parameterMaxResult;
         $brand = empty($request->query->get('brand')) ? null : $request->query->get('brand');
         $price = [0, 10000];
 
@@ -74,10 +76,11 @@ class ParametersRepositoryPreparator
             $price = $this->preparePrice($request->query->get('price'));
         }
 
+        $count =  $this->countAll($brand, $price);
+
         //Page
-        if ($this->queryPage !== null && count($price) === 2) {
-            $page = $this->preparePage($parameterMaxResult, $brand, $price);
-            $maxResult = $parameterMaxResult;
+        if ($this->queryPage !== null) {
+            $page = $this->preparePage($count, $parameterMaxResult);
         }
 
         // Errors
@@ -85,21 +88,15 @@ class ParametersRepositoryPreparator
             return $this->getErrors($page, $price);
         }
 
-        return compact('page', 'maxResult', 'brand', 'price');
+        return compact('page', 'maxResult', 'brand', 'price', 'count');
     }
 
     /**
+     * @param int $count
      * @param int|null $maxResult
-     * @param string|null $brand
-     * @param array|null $price
-     * @param bool $customer
-     *
      * @return int|string[]
-     *
-     * @throws NoResultException
-     * @throws NonUniqueResultException
      */
-    private function preparePage(?int $maxResult, ?string $brand, ?array $price, bool $customer = false)
+    private function preparePage(int $count, ?int $maxResult)
     {
         if (!empty($this->queryPage) && !preg_match('#(^-?(\d+))$#', $this->queryPage)) {
             return $page = [
@@ -109,7 +106,7 @@ class ParametersRepositoryPreparator
 
         $page = (int)$this->queryPage > 1 ? (int)$this->queryPage : 1 ;
 
-        $count =  $this->countAll($brand, $price, $customer);
+//        $count =  $this->countAll($brand, $price, $userId);
 
         if ($page > $count/$maxResult) {
             $page = (int)ceil($count/$maxResult);
@@ -125,17 +122,16 @@ class ParametersRepositoryPreparator
     /**
      * @param string|null $brand
      * @param array|null $price
-     * @param bool $customer
-     *
+     * @param int|null $userId
      * @return int|mixed|string
      *
      * @throws NoResultException
      * @throws NonUniqueResultException
      */
-    private function countAll(?string $brand, ?array $price, bool $customer)
+    private function countAll(?string $brand, ?array $price, ?int $userId = null)
     {
-        if ($customer) {
-            return $this->customerRepository->countAll();
+        if ($userId) {
+            return $this->customerRepository->countAll($userId);
         }
 
         return $this->phoneRepository->countAll($brand, $price);
@@ -148,9 +144,9 @@ class ParametersRepositoryPreparator
     private function preparePrice(string $price) : array
     {
         // regex should be of type [minPrice] or [inPrice, maxPrice]
-        if (!preg_match('#(^\[\d+( )?(,( )?\d+)?\])$#', $price)) {
+        if (!preg_match('#(^\[\d+( )?(,( )?\d+)?])$#', $price)) {
             return [
-                'error' => 'L\'intervalle de prix n\'a pas le bon format : [prixMin] ou [prixMin, prixMax]'
+                'error' => 'L\'intervalle de prix n\'a pas le bon format : ?price=[prixMin] ou ?price=[prixMin, prixMax]'
             ];
         }
 

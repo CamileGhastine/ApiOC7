@@ -26,6 +26,7 @@ class User implements UserInterface
     /**
      * @ORM\Column(type="string", length=180, unique=true)
      * @Assert\NotBlank(message= "Le champs username ne peut pas être vide.")
+     * @Assert\Regex("/^\w+/", message="Le champs username n'a pas le bon format.")
      * @Assert\Length(
      *      min = 2,
      *      max = 50,
@@ -45,11 +46,12 @@ class User implements UserInterface
      * @var string The hashed password
      * @ORM\Column(type="string")
      * @Assert\NotBlank(message= "Le mot de passe ne peut pas être vide.")
+//     * @Assert\Regex("/(?=.*\d)(?=.*[A-Z])(?=.*[a-z])/", message="Le champs password doit comporter au moins 6 caractères dont une majuscule, une minuscule et un chiffre.")
      */
     private $password;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Customer::class, inversedBy="users")
+     * @ORM\OneToMany(targetEntity=Customer::class, mappedBy="user", orphanRemoval=true)
      */
     private $customers;
 
@@ -143,6 +145,7 @@ class User implements UserInterface
     {
         if (!$this->customers->contains($customer)) {
             $this->customers[] = $customer;
+            $customer->setUser($this);
         }
 
         return $this;
@@ -152,6 +155,10 @@ class User implements UserInterface
     {
         if ($this->customers->contains($customer)) {
             $this->customers->removeElement($customer);
+            // set the owning side to null (unless already changed)
+            if ($customer->getUser() === $this) {
+                $customer->setUser(null);
+            }
         }
 
         return $this;

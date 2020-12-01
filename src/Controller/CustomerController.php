@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Customer;
 use App\Repository\CustomerRepository;
+use App\Service\DataPaginator;
 use App\Service\ParametersRepositoryPreparator;
 use App\Service\SetCustomer;
 use Doctrine\ORM\EntityManagerInterface;
@@ -46,15 +47,16 @@ class CustomerController extends AbstractController
      * @param CustomerRepository $customerRepository
      * @param ParametersRepositoryPreparator $preparator
      *
+     * @param DataPaginator $dataPaginator
      * @return JsonResponse|Response
      *
      * @throws NoResultException
      * @throws NonUniqueResultException
      * @throws Exception
      */
-    public function index(Request $request, CustomerRepository $customerRepository, ParametersRepositoryPreparator $preparator)
+    public function index(Request $request, CustomerRepository $customerRepository, ParametersRepositoryPreparator $preparator, DataPaginator $dataPaginator)
     {
-        $parameters = $preparator->prepareParametersCustomer($request, $this->getParameter('paginator.maxResult'));
+        $parameters = $preparator->prepareParametersCustomer($request, $this->getUser()->getId(), $this->getParameter('paginator.maxResult'));
 
         // if $page have message error
         if (isset($parameters['error'])) {
@@ -66,9 +68,19 @@ class CustomerController extends AbstractController
             return new JsonResponse($data, Response::HTTP_BAD_REQUEST);
         }
 
-        $customer = $customerRepository->findCustomersPaginated($parameters, $this->getUser()->getId());
+        if ((int)$parameters['count'] === 0) {
+            $data = [
+                'status' => Response::HTTP_OK,
+                'message' => "Aucun client pour cet utilisateur."
+            ];
 
-        $data = $this->serializer->serialize($customer->getIterator(), 'json', SerializationContext::create()->setGroups(['list']));
+            return new JsonResponse($data, Response::HTTP_OK);
+        }
+
+        $data = $dataPaginator->paginate($customerRepository->findCustomersPaginated($parameters, $this->getUser()->getId())->getIterator(), $parameters);
+
+        $data = $this->serializer->serialize($data, 'json', SerializationContext::create()->setGroups(['list']));
+
 
         return new Response($data, Response::HTTP_OK, [
             'Content-Type' => 'application/json'
@@ -90,8 +102,13 @@ class CustomerController extends AbstractController
 
         $data = $this->serializer->serialize($customer, 'json', SerializationContext::create()->setGroups(['detail']));
 
-        if($data === "[]") {
-            $data = "Ce client n'existe pas pour cet utilisateur.";
+        if ($data === "[]") {
+            $data = [
+                'status' => Response::HTTP_OK,
+                'message' => "Ce client n'existe pas pour cet utilisateur."
+            ];
+
+            return new JsonResponse($data, Response::HTTP_OK);
         }
 
         return new Response($data, Response::HTTP_OK, [
@@ -108,7 +125,17 @@ class CustomerController extends AbstractController
      */
     public function new(Request $request)
     {
+        if ($request->getContent() === "") {
+            $data = [
+                'status' => Response::HTTP_BAD_REQUEST,
+                'message' => "Le courriel, le nom, le prénom, l'adresse, le code postal et la ville au format json sont obligatoires !"
+            ];
+
+            return new JsonResponse($data, Response::HTTP_BAD_REQUEST);
+        }
+
         $customer = $this->serializer->deserialize($request->getContent(), Customer::class, 'json');
+        $customer->setUser($this->getUser());
 
         $errors = $this->validator->validate($customer);
 
@@ -139,6 +166,24 @@ class CustomerController extends AbstractController
      */
     public function update(Customer $customer, Request $request, SetCustomer $setCustomer)
     {
+        if ($request->getContent() === "") {
+            $data = [
+                'status' => Response::HTTP_BAD_REQUEST,
+                'message' => "Aucune information entrée pour la modification."
+            ];
+
+            return new JsonResponse($data, Response::HTTP_BAD_REQUEST);
+        }
+
+        if ($customer->getUser() !== $this->getUser()) {
+            $data = [
+                'status' => Response::HTTP_OK,
+                'message' => "Ce client n'existe pas pour cet utilisateur."
+            ];
+
+            return new JsonResponse($data, Response::HTTP_OK);
+        }
+
         $setCustomer->set($request, $customer);
 
         $errors = $this->validator->validate($customer);
@@ -167,6 +212,15 @@ class CustomerController extends AbstractController
      */
     public function delete(Customer $customer)
     {
+        if ($customer->getUser() !== $this->getUser()) {
+            $data = [
+                'status' => Response::HTTP_OK,
+                'message' => "Ce client n'existe pas pour cet utilisateur."
+            ];
+
+            return new JsonResponse($data, Response::HTTP_OK);
+        }
+
         $this->em->remove($customer);
 
         $this->em->flush();
@@ -174,6 +228,5 @@ class CustomerController extends AbstractController
         return new Response('Le client a été supprimé avec succès !', Response::HTTP_RESET_CONTENT, [
             'Content-Type' => 'application/json'
         ]);
-
     }
 }

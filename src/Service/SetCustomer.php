@@ -3,9 +3,7 @@
 
 namespace App\Service;
 
-use App\Entity\Customer;
 use App\Repository\PhoneRepository;
-use Symfony\Component\HttpFoundation\Request;
 
 class SetCustomer
 {

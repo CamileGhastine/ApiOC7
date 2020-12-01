@@ -25,6 +25,7 @@ class CustomerRepository extends ServiceEntityRepository
     /**
      * @param array $parameters
      *
+     * @param int $userId
      * @return Paginator
      */
     public function findCustomersPaginated(array $parameters, int $userId)
@@ -32,7 +33,7 @@ class CustomerRepository extends ServiceEntityRepository
         extract($parameters);
 
         $query = $this->createQueryBuilder('p')
-            ->leftJoin('p.users', 'u')
+            ->leftJoin('p.user', 'u')
             -> where('u.id = :userId')
             ->setParameter('userId', $userId)
             ->setFirstResult(($page-1)*$maxResult)
@@ -52,26 +53,29 @@ class CustomerRepository extends ServiceEntityRepository
     public function findCustomerByUser(int $id, int $userId)
     {
         return $query = $this->createQueryBuilder('c')
-            ->leftJoin('c.users', 'u')
+            ->leftJoin('c.user', 'u')
             ->where('c.id = :id')
             ->andWhere('u.id = :userId')
             ->setParameter('userId', $userId)
             ->setParameter('id', $id)
             ->getQuery()
             ->getResult();
-
     }
 
     /**
+     * @param $userId
      * @return int|mixed|string
      *
      * @throws NoResultException
      * @throws NonUniqueResultException
      */
-    public function countAll()
+    public function countAll($userId)
     {
         return $query = $this->createQueryBuilder('c')
             ->select('COUNT(c)')
+            ->leftJoin('c.user', 'u')
+            ->where('u.id = :userId')
+            ->setParameter('userId', $userId)
             ->getQuery()
             ->getSingleScalarResult()
             ;

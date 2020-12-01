@@ -3,11 +3,11 @@
 namespace App\EventSubscriber;
 
 use ErrorException;
-use RuntimeException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -20,7 +20,10 @@ class ExceptionSubscriber implements EventSubscriberInterface
     {
         $exception = $event->getThrowable();
 
-        if (!($exception instanceof NotFoundHttpException) && !($exception instanceof ErrorException) && !($exception instanceof MethodNotAllowedHttpException)) {
+        if (!($exception instanceof NotFoundHttpException) &&
+            !($exception instanceof ErrorException) &&
+            !($exception instanceof MethodNotAllowedHttpException) &&
+            !($exception instanceof BadRequestHttpException)) {
             return ;
         }
 
@@ -32,6 +35,13 @@ class ExceptionSubscriber implements EventSubscriberInterface
             $data = $this->getDataOtherException($exception);
         }
 
+        if ($exception instanceof BadRequestHttpException) {
+            $data = [
+                'status' => Response::HTTP_BAD_REQUEST,
+                'message' => 'Le format saisi n\'est pas un format json valide !'
+            ];
+        }
+
         $response = new JsonResponse($data, $data['status']);
 
         $event->setResponse($response);
@@ -39,8 +49,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
 
     /**
      * @param $exception
-     *
-     * @return array
+     * @return array|void
      */
     private function getDataForNotFoundHttpException($exception)
     {
@@ -57,6 +66,8 @@ class ExceptionSubscriber implements EventSubscriberInterface
                 'message' => 'La ressource n\'existe pas.'
             ];
         }
+
+        return;
     }
 
     /**

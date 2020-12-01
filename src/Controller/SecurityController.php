@@ -46,6 +46,15 @@ class SecurityController extends AbstractController
      */
     public function register(Request $request, SetUser $setUser)
     {
+        if ($request->getContent() === "") {
+            $data = [
+                'status' => Response::HTTP_BAD_REQUEST,
+                'message' => "Les clefs username et password au format json sont obligatoires !"
+            ];
+
+            return new JsonResponse($data, Response::HTTP_BAD_REQUEST);
+        }
+
         $user = $this->serializer->deserialize($request->getContent(), User::class, 'json');
 
         if (!$user->getUsername() || !$user->getPassword()) {
@@ -54,15 +63,15 @@ class SecurityController extends AbstractController
                 'message' => 'Les clefs username et password sont obligatoires !'
             ];
 
-            return new JsonResponse($data, Response::HTTP_UNPROCESSABLE_ENTITY, ['Content-Type' => 'application/json'] );
+            return new JsonResponse($data, Response::HTTP_UNPROCESSABLE_ENTITY, ['Content-Type' => 'application/json']);
         }
 
         $errors = $setUser->set($user);
 
-        if(count($errors)) {
+        if (count($errors)) {
             $data = $this->serializer->serialize($errors, 'json');
 
-            return new Response($data, Response::HTTP_UNPROCESSABLE_ENTITY, ['Content-Type' => 'application/json'] );
+            return new Response($data, Response::HTTP_UNPROCESSABLE_ENTITY, ['Content-Type' => 'application/json']);
         }
 
         $this->em->persist($user);
@@ -73,6 +82,6 @@ class SecurityController extends AbstractController
             'message' => 'L\'utilisateur a été enregistré avec succès !'
         ];
 
-        return new JsonResponse($data, Response::HTTP_CREATED, ['Content-Type' => 'application/json'] );
+        return new JsonResponse($data, Response::HTTP_CREATED, ['Content-Type' => 'application/json']);
     }
 }

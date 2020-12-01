@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Phone;
 use App\Repository\PhoneRepository;
+use App\Service\DataPaginator;
 use App\Service\ParametersRepositoryPreparator;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -37,13 +38,14 @@ class PhoneController extends AbstractController
      * @param PhoneRepository $phoneRepository
      * @param ParametersRepositoryPreparator $preparator
      *
+     * @param DataPaginator $dataPaginator
      * @return Response
      *
      * @throws NoResultException
      * @throws NonUniqueResultException
      * @throws Exception
      */
-    public function index(Request $request, PhoneRepository $phoneRepository, ParametersRepositoryPreparator $preparator)
+    public function index(Request $request, PhoneRepository $phoneRepository, ParametersRepositoryPreparator $preparator, DataPaginator $dataPaginator)
     {
         $parameters = $preparator->prepareParametersPhone($request, $this->getParameter('paginator.maxResult'));
 
@@ -57,12 +59,21 @@ class PhoneController extends AbstractController
             return new JsonResponse($data, Response::HTTP_BAD_REQUEST);
         }
 
-        $phone = $phoneRepository->findPhonePaginated($parameters);
+        if ((int)$parameters['count'] === 0) {
+            $data = [
+                'status' => Response::HTTP_OK,
+                'message' => "Aucun téléphone trouvé pour ces critères de recherche."
+            ];
 
-        $data = $this->serializer->serialize($phone->getIterator(), 'json', SerializationContext::create()->setGroups(['list']));
+            return new JsonResponse($data, Response::HTTP_OK);
+        }
+
+        $data = $dataPaginator->paginate($phoneRepository->findPhonePaginated($parameters)->getIterator(), $parameters);
+
+        $data = $this->serializer->serialize($data, 'json', SerializationContext::create()->setGroups(['list']));
+
 
         return new Response($data, Response::HTTP_OK, ['Content-TYpe' => 'application/json']);
-
     }
 
     /**

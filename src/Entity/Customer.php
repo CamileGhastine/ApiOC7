@@ -14,14 +14,18 @@ use Hateoas\Configuration\Annotation as Hateoas;
 
 /**
  * @ORM\Entity(repositoryClass=CustomerRepository::class)
- * @UniqueEntity("email", message="ce courriel est déjà utilisé !")
+ * @UniqueEntity(fields={"email", "user"}, message="ce courriel est déjà utilisé !")
  * @Hateoas\Relation(
  *     "self",
- *     href = @Hateoas\Route(
- *         "show_customer",
+ *     href = @Hateoas\Route("show_customer",
  *         parameters = { "id" = "expr(object.getId())" }
  *     ),
  *     embedded = "expr(object.getPhones())",
+ *     exclusion = @Hateoas\Exclusion(groups = "detail")
+ * )
+ * @Hateoas\Relation(
+ *     "create",
+ *     href = @Hateoas\Route("add_customer"),
  *     exclusion = @Hateoas\Exclusion(groups = "detail")
  * )
  * @Hateoas\Relation(
@@ -38,11 +42,27 @@ use Hateoas\Configuration\Annotation as Hateoas;
  * )
  * @Hateoas\Relation(
  *     "self",
- *     href = @Hateoas\Route(
- *         "show_customer",
+ *     href = @Hateoas\Route("show_customer",
  *         parameters = { "id" = "expr(object.getId())" }
  *     ),
  *     embedded = "expr(object.getPhones())",
+ *     exclusion = @Hateoas\Exclusion(groups = "list")
+ * )
+ * @Hateoas\Relation(
+ *     "create",
+ *     href = @Hateoas\Route("add_customer"),
+ *     exclusion = @Hateoas\Exclusion(groups = "list")
+ * )
+ * @Hateoas\Relation(
+ *     "update",
+ *     href = @Hateoas\Route("update_customer",
+ *     parameters = { "id" = "expr(object.getId())" }),
+ *     exclusion = @Hateoas\Exclusion(groups = "list")
+ * )
+ * @Hateoas\Relation(
+ *     "delete",
+ *     href = @Hateoas\Route("delete_customer",
+ *     parameters = { "id" = "expr(object.getId())" }),
  *     exclusion = @Hateoas\Exclusion(groups = "list")
  * )
  */
@@ -59,7 +79,7 @@ class Customer
     /**
      * @ORM\Column(type="string", length=255)
      * @Serializer\Groups({"detail", "list"})
-     * @Assert\NotBlank(message= "Le champs prénom ne peut pas être vide.")
+     * @Assert\NotBlank(message= "Le champs email ne peut pas être vide.")
      * @Assert\Email
      */
     private $email;
@@ -69,6 +89,7 @@ class Customer
      * @Serializer\Groups({"detail", "list"})
      * @SerializedName("firstName")
      * @Assert\NotBlank(message= "Le champs prénom ne peut pas être vide.")
+     * @Assert\Regex("/^[a-zA-Z_]([a-zA-Z_](\s|-)?)+[a-zA-Z_]+$/", message="Le champs prénom n'a pas le bon format ")
      * @Assert\Length(
      *      min = 2,
      *      max = 50,
@@ -84,6 +105,7 @@ class Customer
      * @Serializer\Groups({"detail", "list"})
      * @SerializedName("lastName")
      * @Assert\NotBlank(message= "Le champs nom ne peut pas être vide.")
+     * @Assert\Regex("/^[a-zA-Z_]([a-zA-Z_](\s|-)?)+[a-zA-Z_]+$/", message="Le champs nom n'a pas le bon format ")
      * @Assert\Length(
      *      min = 2,
      *      max = 50,
@@ -98,6 +120,7 @@ class Customer
      * @ORM\Column(type="string", length=255)
      * @Serializer\Groups({"detail"})
      * @Assert\NotBlank(message= "Le champs adresse ne peut pas être vide.")
+     * @Assert\Regex("/\w+/", message="Le champs adresse n'a pas le bon format ")
      * @Assert\Length(
      *      min = 2,
      *      max = 255,
@@ -126,6 +149,7 @@ class Customer
      * @ORM\Column(type="string", length=255)
      * @Serializer\Groups({"detail"})
      * @Assert\NotBlank(message= "Le champs ville ne peut pas être vide.")
+     * @Assert\Regex("/^[a-zA-Z_]([a-zA-Z_](\s|-)?)+[a-zA-Z_]+$/", message="Le champs ville n'a pas le bon format ")
      * @Assert\Length(
      *      min = 2,
      *      max = 50,
@@ -142,14 +166,14 @@ class Customer
     private $phones;
 
     /**
-     * @ORM\ManyToMany(targetEntity=User::class, mappedBy="customers")
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="customers")
+     * @ORM\JoinColumn(nullable=false)
      */
-    private $users;
+    private $user;
 
     public function __construct()
     {
         $this->phones = new ArrayCollection();
-        $this->users = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -255,30 +279,14 @@ class Customer
         return $this;
     }
 
-    /**
-     * @return Collection|User[]
-     */
-    public function getUsers(): Collection
+    public function getUser(): ?User
     {
-        return $this->users;
+        return $this->user;
     }
 
-    public function addUser(User $user): self
+    public function setUser(?User $user): self
     {
-        if (!$this->users->contains($user)) {
-            $this->users[] = $user;
-            $user->addCustomer($this);
-        }
-
-        return $this;
-    }
-
-    public function removeUser(User $user): self
-    {
-        if ($this->users->contains($user)) {
-            $this->users->removeElement($user);
-            $user->removeCustomer($this);
-        }
+        $this->user = $user;
 
         return $this;
     }

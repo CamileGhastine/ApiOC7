@@ -21,7 +21,7 @@ class UserFixtures extends Fixture
      */
     public function load(ObjectManager $manager)
     {
-        for($i=1; $i<=2;$i++){
+        for ($i=1; $i<=2;$i++) {
             $user = new user();
 
             $user->setUsername('Client-'.$i)
