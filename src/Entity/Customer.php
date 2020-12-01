@@ -69,6 +69,7 @@ use OpenApi\Annotations as OA;
  *     parameters = { "id" = "expr(object.getId())" }),
  *     exclusion = @Hateoas\Exclusion(groups = "list")
  * )
+ *
  * @OA\Schema(
  *     schema="CustomersList",
  *     @OA\Property(type="integer", property="id"),
@@ -86,7 +87,9 @@ use OpenApi\Annotations as OA;
  * )
  * @OA\Schema(
  *     schema="CustomerEdit",
- *     allOf={@OA\Schema(ref="#/components/schemas/CustomersList")},
+ *     @OA\Property(type="string", property="email"),
+ *     @OA\Property(type="string", property="firstName"),
+ *     @OA\Property(type="string", property="lastName"),
  *     @OA\Property(type="string", property="adress"),
  *     @OA\Property(type="integer", property="postCode"),
  *     @OA\Property(type="string", property="city"),

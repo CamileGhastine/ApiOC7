@@ -37,6 +37,7 @@ class PhoneController extends AbstractController
      *
      * @OA\Get(
      *     path="/phones",
+     *     security={"bearer"},
      *     tags={"Phone"},
      *     @OA\Parameter(
      *          name="page",
@@ -114,6 +115,7 @@ class PhoneController extends AbstractController
      *
      * @OA\Get(
      *     path="/phones/{id}",
+     *     security={"bearer"},
      *     tags={"Phone"},
      *     @OA\Parameter(ref="#/components/parameters/id"),
      *     @OA\Response(

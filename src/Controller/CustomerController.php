@@ -46,6 +46,7 @@ class CustomerController extends AbstractController
      *
      * @OA\Get(
      *     path="/customers",
+     *     security={"bearer"},
      *     tags={"Customer"},
      *     @OA\Parameter(
      *          name="page",
@@ -111,6 +112,7 @@ class CustomerController extends AbstractController
      *
      * @OA\Get(
      *     path="/customers/{id}",
+     *     security={"bearer"},
      *     tags={"Customer"},
      *     @OA\Parameter(ref="#/components/parameters/id"),
      *     @OA\Response(
@@ -152,11 +154,12 @@ class CustomerController extends AbstractController
      *
      * @OA\Post(
      *     path="/customers",
+     *     security={"bearer"},
      *     tags={"Customer"},
      *     @OA\RequestBody(
      *          required=true,
      *          @OA\JsonContent(
-     *               required={"id", "email", "firstname", "lastName", "adress", "postCode", "city"},
+     *               required={"email", "firstname", "lastName", "adress", "postCode", "city"},
      *               ref="#/components/schemas/CustomerEdit"
      *          )
      *     ),
@@ -211,6 +214,7 @@ class CustomerController extends AbstractController
      *
      * @OA\Put(
      *     path="/customers/{id}",
+     *     security={"bearer"},
      *     tags={"Customer"},
      *     @OA\RequestBody(
      *          required=true,
@@ -277,6 +281,7 @@ class CustomerController extends AbstractController
      *
      * @OA\Delete(
      *     path="/customers/{id}",
+     *     security={"bearer"},
      *     tags={"Customer"},
      *     @OA\Parameter(ref="#/components/parameters/id"),
      *     @OA\Response(

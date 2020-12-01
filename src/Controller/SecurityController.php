@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-
+use OpenApi\Annotations as OA;
 /**
  * Class SecurityController
  *
@@ -38,6 +38,25 @@ class SecurityController extends AbstractController
 
     /**
      * @Route("/register", name="register", methods={"post"})
+     *
+     * @OA\Post(
+     *     path="/register",
+     *     tags={"Security"},
+     *     @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *               required={"username", "password"},
+     *               ref="#/components/schemas/User"
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response="200",
+     *          description="Inscription d'un utilisateur",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="L'utilisateur a été enregistré avec succès !")
+     *          )
+     *     ),
+     * )
      *
      * @param Request $request
      * @param SetUser $setUser
@@ -83,5 +102,31 @@ class SecurityController extends AbstractController
         ];
 
         return new JsonResponse($data, Response::HTTP_CREATED, ['Content-Type' => 'application/json']);
+    }
+
+    /**
+     * @OA\Post(
+     *     path="/login_check",
+     *     tags={"Security"},
+     *     @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *               required={"username", "password"},
+     *               ref="#/components/schemas/User"
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response="200",
+     *          description="Inscription d'un utilisateur",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="token", type="string",
+     *              example="eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2MDY4NTUyNzEsImV4cCI6MTYwNjg1ODg3MSwicm9sZXMiOlsiUk9MRV9VU0VSIl0sInVzZXJuYW1lIjoiQ2xpZW50LTEifQ.SVGKQhz-r9JLScuS3fzopa-oWKPDbv51ER9x_yILmvnLQcxX8DI2Yr75pR4iBR598GQtqkAYEsz1VO42CZICwXbgpibn9FrVzsxsyMm3AN4gJmlLaLVqoYL7aY1VSjPR5wMVoQQrKr9WqPBnGv4uo_CqzQiXByi8BBUYEtOg4pjcfNTQPnacjRwVa0eW4krgCJHKJfYX8v64oixk5pPUkHuHxJkdcQjqGzXQP5cnuS8jqhrOuEGVIKjqmLPfgXsPiMUXwfVigztzlF5-qpjAtKPFunkak15kh68Hu6Fif73UyXKK-aYqZ2_yMBlRsEpFav_AXtvFinpgZ2ZvmQXffWDe_f1Bm94ht_jYCz4zhr7n3UGRAsyyHAn7CmRopbG6ET4R-DVbGB4HHi9OMUeNTtSS02eUzPOhVNeVqzzh4mClapARvId1lbCcHuFjHuvRr-CMzE0nfkiHiRsXc-JHzHyAx9glnrOUre76-xUFH78NCm585gUv9HebCuI42n0neg_4XExDQ7gsRzaCNr-12JOrZowz66DyGw27QCrHyByRS1XKiVdrI2njwxbc0apkAAcsxBghzk9pDNcxYX69nfMK0TnePnD89kIZlBJz32i4TfSTdKB5tjc3ajiLGVKlukH1Oz1Q9H1gt6CXWcny7wpMXXgHRuumzkAMnnnxj0Q")
+     *          )
+     *     ),
+     * )
+     */
+    public function login()
+    {
+//        Manage by JWT
     }
 }

@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
 use OpenApi\Annotations as OA;
 
 class Controller extends AbstractController
@@ -23,6 +22,7 @@ class Controller extends AbstractController
      *          @OA\Property(property="message", type="string", example="La ressource n'existe pas.")
      *     )
      * )
+     * @OA\SecurityScheme(bearerFormat="JWT", type="apiKey", securityScheme="bearer")
      */
     public function index()
     {
