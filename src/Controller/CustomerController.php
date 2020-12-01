@@ -10,6 +10,7 @@ use App\Service\SetCustomer;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
+use Exception;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -51,6 +52,7 @@ class CustomerController extends AbstractController
      *
      * @throws NoResultException
      * @throws NonUniqueResultException
+     * @throws Exception
      */
     public function index(Request $request, CustomerRepository $customerRepository, ParametersRepositoryPreparator $preparator, DataPaginator $dataPaginator)
     {
@@ -66,11 +68,7 @@ class CustomerController extends AbstractController
             return new JsonResponse($data, Response::HTTP_BAD_REQUEST);
         }
 
-        $data = $dataPaginator->paginate($customerRepository->findCustomersPaginated($parameters, $this->getUser()->getId())->getIterator(), $parameters);
-
-        $data = $this->serializer->serialize($data, 'json', SerializationContext::create()->setGroups(['list']));
-
-        if ($data === "[]") {
+        if ((int)$parameters['count'] === 0) {
             $data = [
                 'status' => Response::HTTP_OK,
                 'message' => "Aucun client pour cet utilisateur."
@@ -78,6 +76,11 @@ class CustomerController extends AbstractController
 
             return new JsonResponse($data, Response::HTTP_OK);
         }
+
+        $data = $dataPaginator->paginate($customerRepository->findCustomersPaginated($parameters, $this->getUser()->getId())->getIterator(), $parameters);
+
+        $data = $this->serializer->serialize($data, 'json', SerializationContext::create()->setGroups(['list']));
+
 
         return new Response($data, Response::HTTP_OK, [
             'Content-Type' => 'application/json'

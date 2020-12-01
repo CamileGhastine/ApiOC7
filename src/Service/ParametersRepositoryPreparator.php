@@ -70,12 +70,13 @@ class ParametersRepositoryPreparator
         $maxResult = $parameterMaxResult;
         $brand = empty($request->query->get('brand')) ? null : $request->query->get('brand');
         $price = [0, 10000];
-        $count =  $this->countAll($brand, $price);
 
         // Price
         if (!empty($request->query->get('price'))) {
             $price = $this->preparePrice($request->query->get('price'));
         }
+
+        $count =  $this->countAll($brand, $price);
 
         //Page
         if ($this->queryPage !== null) {

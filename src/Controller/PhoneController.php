@@ -59,11 +59,7 @@ class PhoneController extends AbstractController
             return new JsonResponse($data, Response::HTTP_BAD_REQUEST);
         }
 
-        $data = $dataPaginator->paginate($phoneRepository->findPhonePaginated($parameters)->getIterator(), $parameters);
-
-        $data = $this->serializer->serialize($data, 'json', SerializationContext::create()->setGroups(['list']));
-
-        if ($data === "[]") {
+        if ((int)$parameters['count'] === 0) {
             $data = [
                 'status' => Response::HTTP_OK,
                 'message' => "Aucun téléphone trouvé pour ces critères de recherche."
@@ -71,6 +67,11 @@ class PhoneController extends AbstractController
 
             return new JsonResponse($data, Response::HTTP_OK);
         }
+
+        $data = $dataPaginator->paginate($phoneRepository->findPhonePaginated($parameters)->getIterator(), $parameters);
+
+        $data = $this->serializer->serialize($data, 'json', SerializationContext::create()->setGroups(['list']));
+
 
         return new Response($data, Response::HTTP_OK, ['Content-TYpe' => 'application/json']);
     }
