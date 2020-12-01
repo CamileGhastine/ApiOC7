@@ -37,6 +37,7 @@ class PhoneController extends AbstractController
      *
      * @OA\Get(
      *     path="/phones",
+     *     tags={"Phone"},
      *     @OA\Parameter(
      *          name="page",
      *          in="query",
@@ -113,18 +114,14 @@ class PhoneController extends AbstractController
      *
      * @OA\Get(
      *     path="/phones/{id}",
-     *     @OA\Parameter(
-     *          name="id",
-     *          in="path",
-     *          description="ID de la ressource",
-     *          required = true,
-     *          @OA\Schema(type="integer")
-     *     ),
+     *     tags={"Phone"},
+     *     @OA\Parameter(ref="#/components/parameters/id"),
      *     @OA\Response(
      *          response="200",
-     *          description="Phone details",
+     *          description="Détails du téléphone",
      *          @OA\JsonContent(ref="#/components/schemas/Phone")
-     *     )
+     *     ),
+     *     @OA\Response(response="404", ref="#/components/responses/NotFound")
      * )
      *
      * @param Phone $phone

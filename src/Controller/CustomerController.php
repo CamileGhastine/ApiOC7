@@ -46,6 +46,7 @@ class CustomerController extends AbstractController
      *
      * @OA\Get(
      *     path="/customers",
+     *     tags={"Customer"},
      *     @OA\Parameter(
      *          name="page",
      *          in="query",
@@ -110,18 +111,15 @@ class CustomerController extends AbstractController
      *
      * @OA\Get(
      *     path="/customers/{id}",
-     *     @OA\Parameter(
-     *          name="id",
-     *          in="path",
-     *          description="ID de la ressource",
-     *          required = true,
-     *          @OA\Schema(type="integer")
-     *     ),
+     *     tags={"Customer"},
+     *     @OA\Parameter(ref="#/components/parameters/id"),
      *     @OA\Response(
      *          response="200",
-     *          description="Phone details",
+     *          description="Informations client",
      *          @OA\JsonContent(ref="#/components/schemas/Customer")
-     *     )
+     *     ),
+     *     @OA\Response(response="404", ref="#/components/responses/NotFound")
+
      * )
      *
      * @param int $id
@@ -190,6 +188,24 @@ class CustomerController extends AbstractController
 
     /**
      * @Route("/customers/{id<\d+>}", name="update_customer", methods={"PUT"})
+     *
+     * @OA\Put(
+     *     path="/customers/{id}",
+     *     tags={"Customer"},
+     *     @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(ref="#/components/schemas/Customer")
+     *     ),
+     *     @OA\Parameter(ref="#/components/parameters/id"),
+     *     @OA\Response(
+     *          response="200",
+     *          description="Modification des informations client",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Le client a été modifié avec succès !")
+     *          )
+     *     ),
+     *     @OA\Response(response="404", ref="#/components/responses/NotFound")
+     * )
      *
      * @param Customer $customer
      * @param Request $request

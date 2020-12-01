@@ -13,6 +13,9 @@
     "paths": {
         "/customers": {
             "get": {
+                "tags": [
+                    "Customer"
+                ],
                 "operationId": "App\\Controller\\CustomerController::index",
                 "parameters": [
                     {
@@ -44,21 +47,18 @@
         },
         "/customers/{id}": {
             "get": {
+                "tags": [
+                    "Customer"
+                ],
                 "operationId": "App\\Controller\\CustomerController::show",
                 "parameters": [
                     {
-                        "name": "id",
-                        "in": "path",
-                        "description": "ID de la ressource",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
+                        "$ref": "#/components/parameters/id"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Phone details",
+                        "description": "Informations client",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -66,12 +66,60 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/NotFound"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Customer"
+                ],
+                "operationId": "App\\Controller\\CustomerController::update",
+                "parameters": [
+                    {
+                        "$ref": "#/components/parameters/id"
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Customer"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Modification des informations client",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Le client a été modifié avec succès !"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/NotFound"
                     }
                 }
             }
         },
         "/phones": {
             "get": {
+                "tags": [
+                    "Phone"
+                ],
                 "operationId": "App\\Controller\\PhoneController::index",
                 "parameters": [
                     {
@@ -122,21 +170,18 @@
         },
         "/phones/{id}": {
             "get": {
+                "tags": [
+                    "Phone"
+                ],
                 "operationId": "App\\Controller\\PhoneController::show",
                 "parameters": [
                     {
-                        "name": "id",
-                        "in": "path",
-                        "description": "ID de la ressource",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
+                        "$ref": "#/components/parameters/id"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Phone details",
+                        "description": "Détails du téléphone",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -144,6 +189,9 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/NotFound"
                     }
                 }
             }
@@ -222,6 +270,35 @@
                         "$ref": "#/components/schemas/PhonesList"
                     }
                 ]
+            }
+        },
+        "responses": {
+            "NotFound": {
+                "description": "La ressource n'existe pas.",
+                "content": {
+                    "application/json": {
+                        "schema": {
+                            "properties": {
+                                "message": {
+                                    "type": "string",
+                                    "example": "La ressource n'existe pas."
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                }
+            }
+        },
+        "parameters": {
+            "id": {
+                "name": "id",
+                "in": "path",
+                "description": "ID de la ressource",
+                "required": true,
+                "schema": {
+                    "type": "integer"
+                }
             }
         }
     }
