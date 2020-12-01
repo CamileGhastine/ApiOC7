@@ -63,6 +63,7 @@ class PhoneController extends AbstractController
 //        $data = $this->serializer->serialize($phone->getIterator(), 'json', SerializationContext::create()->setGroups(['list']));
 
         $data = $dataPaginator->paginate ($phoneRepository->findPhonePaginated($parameters)->getIterator(), $parameters);
+
         $data = $this->serializer->serialize($data, 'json', SerializationContext::create()->setGroups(['list']));
 
         if($data === "[]") {

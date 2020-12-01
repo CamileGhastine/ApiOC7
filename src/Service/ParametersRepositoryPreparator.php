@@ -40,7 +40,7 @@ class ParametersRepositoryPreparator
 
         //Page
         if ($this->queryPage !== null) {
-            $page = $this->preparePage($count, $parameterMaxResult, null, null, $userId);
+            $page = $this->preparePage($count, $parameterMaxResult);
             $maxResult = $parameterMaxResult;
         }
 
@@ -51,7 +51,7 @@ class ParametersRepositoryPreparator
             ]];
         }
 
-        return compact('page', 'maxResult');
+        return compact('page', 'maxResult', 'count');
     }
 
     /**
@@ -79,7 +79,7 @@ class ParametersRepositoryPreparator
 
         //Page
         if ($this->queryPage !== null) {
-            $page = $this->preparePage($count, $parameterMaxResult, $brand, $price);
+            $page = $this->preparePage($count, $parameterMaxResult);
         }
 
         // Errors
@@ -91,16 +91,11 @@ class ParametersRepositoryPreparator
     }
 
     /**
+     * @param int $count
      * @param int|null $maxResult
-     * @param string|null $brand
-     * @param array|null $price
-     * @param int|null $userId
      * @return int|string[]
-     *
-     * @throws NoResultException
-     * @throws NonUniqueResultException
      */
-    private function preparePage(int $count, ?int $maxResult, ?string $brand, ?array $price, ?int $userId = null)
+    private function preparePage(int $count, ?int $maxResult)
     {
         if (!empty($this->queryPage) && !preg_match('#(^-?(\d+))$#', $this->queryPage)) {
             return $page = [

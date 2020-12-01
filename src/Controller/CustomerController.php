@@ -4,12 +4,12 @@ namespace App\Controller;
 
 use App\Entity\Customer;
 use App\Repository\CustomerRepository;
+use App\Service\DataPaginator;
 use App\Service\ParametersRepositoryPreparator;
 use App\Service\SetCustomer;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
-use Exception;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -46,13 +46,13 @@ class CustomerController extends AbstractController
      * @param CustomerRepository $customerRepository
      * @param ParametersRepositoryPreparator $preparator
      *
+     * @param DataPaginator $dataPaginator
      * @return JsonResponse|Response
      *
      * @throws NoResultException
      * @throws NonUniqueResultException
-     * @throws Exception
      */
-    public function index(Request $request, CustomerRepository $customerRepository, ParametersRepositoryPreparator $preparator)
+    public function index(Request $request, CustomerRepository $customerRepository, ParametersRepositoryPreparator $preparator, DataPaginator $dataPaginator)
     {
         $parameters = $preparator->prepareParametersCustomer($request, $this->getUser()->getId(), $this->getParameter('paginator.maxResult'));
 
@@ -66,9 +66,9 @@ class CustomerController extends AbstractController
             return new JsonResponse($data, Response::HTTP_BAD_REQUEST);
         }
 
-        $customer = $customerRepository->findCustomersPaginated($parameters, $this->getUser()->getId());
+        $data = $dataPaginator->paginate($customerRepository->findCustomersPaginated($parameters, $this->getUser()->getId())->getIterator(), $parameters);
 
-        $data = $this->serializer->serialize($customer->getIterator(), 'json', SerializationContext::create()->setGroups(['list']));
+        $data = $this->serializer->serialize($data, 'json', SerializationContext::create()->setGroups(['list']));
 
         if($data === "[]") {
             $data = [
