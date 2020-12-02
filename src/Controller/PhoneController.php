@@ -4,13 +4,13 @@ namespace App\Controller;
 
 use App\Entity\Phone;
 use App\Repository\PhoneRepository;
-use App\Service\DataPaginator;
+use App\Service\PaginationAdder;
 use App\Service\ParametersRepositoryPreparator;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
-use Exception;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -73,15 +73,16 @@ class PhoneController extends AbstractController
      * @param Request $request
      * @param PhoneRepository $phoneRepository
      * @param ParametersRepositoryPreparator $preparator
-     * @param DataPaginator $dataPaginator
+     * @param PaginationAdder $PaginationAdder
      *
+     * @param CacheInterface $cache
      * @return Response
      *
+     * @throws InvalidArgumentException
      * @throws NoResultException
      * @throws NonUniqueResultException
-     * @throws Exception
      */
-    public function index(Request $request, PhoneRepository $phoneRepository, ParametersRepositoryPreparator $preparator, DataPaginator $dataPaginator, CacheInterface $cache)
+    public function index(Request $request, PhoneRepository $phoneRepository, ParametersRepositoryPreparator $preparator, PaginationAdder $PaginationAdder, CacheInterface $cache)
     {
         $parameters = $preparator->prepareParametersPhone($request, $this->getParameter('paginator.maxResult'));
 
@@ -106,9 +107,9 @@ class PhoneController extends AbstractController
 
         $cacheName = 'cachePhonesList'.$request->query->get('page').$request->query->get('brand').$request->query->get('price');
 
-        $data = $cache->get($cacheName, function (ItemInterface $item) use ($parameters, $dataPaginator, $phoneRepository){
+        $data = $cache->get($cacheName, function (ItemInterface $item) use ($parameters, $PaginationAdder, $phoneRepository){
             $item->expiresAfter(3600);
-            $data = $dataPaginator->paginate($phoneRepository->findPhonePaginated($parameters)->getIterator(), $parameters);
+            $data = $PaginationAdder->add($phoneRepository->findPhonePaginated($parameters)->getIterator(), $parameters);
 
             return $this->serializer->serialize($data, 'json', SerializationContext::create()->setGroups(['list']));
         });
@@ -135,12 +136,17 @@ class PhoneController extends AbstractController
      * )
      *
      * @param Phone $phone
+     * @param CacheInterface $cache
      *
      * @return Response
+     *
+     * @throws InvalidArgumentException
      */
     public function show(Phone $phone, CacheInterface $cache)
     {
-        $data = $cache->get('cachePhone', function(ItemInterface $item) use ($phone) {
+        $cacheName = 'cachePhone'.$phone->getId();
+
+        $data = $cache->get($cacheName, function(ItemInterface $item) use ($phone) {
             $item->expiresAfter(3600);
 
             return $this->serializer->serialize($phone, 'json', SerializationContext::create()->setGroups(['detail']));

@@ -4,10 +4,10 @@
 namespace App\Service;
 
 /**
- * Class DataPreparator
+ * Class PaginationAdder
  * @package App\Service
  */
-class DataPaginator
+class PaginationAdder
 {
     /**
      * @param $entities
@@ -15,7 +15,7 @@ class DataPaginator
      *
      * @return mixed
      */
-    public function paginate($entities, $parameters)
+    public function add($entities, $parameters)
     {
         $prev = $parameters['page'] === 1 ? 1 : $parameters['page']-1;
         $last = (int)ceil($parameters['count'] / $parameters['maxResult']);
