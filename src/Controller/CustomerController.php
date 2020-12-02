@@ -11,6 +11,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use JMS\Serializer\SerializerInterface;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -67,7 +68,7 @@ class CustomerController extends AbstractController
      * @return JsonResponse|Response
      *
      * @throws NoResultException
-     * @throws NonUniqueResultException
+     * @throws NonUniqueResultException|InvalidArgumentException
      */
     public function index(Request $request, ParametersRepositoryPreparator $preparator, Encacher $encacher)
     {
@@ -121,6 +122,7 @@ class CustomerController extends AbstractController
      *
      * @param Encacher $encacher
      * @return Response
+     * @throws InvalidArgumentException
      */
     public function show(int $id, CustomerRepository $customerRepository, Encacher $encacher)
     {

@@ -4,10 +4,12 @@ namespace App\Controller;
 
 use App\Entity\Phone;
 use App\Service\Encacher;
+use App\Service\MessageGenerator;
 use App\Service\ParametersRepositoryPreparator;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use JMS\Serializer\SerializerInterface;
+use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,10 +25,12 @@ use OpenApi\Annotations as OA;
 class PhoneController extends AbstractController
 {
     private $serializer;
+    private $encacher;
 
-    public function __construct(SerializerInterface $serializer)
+    public function __construct(SerializerInterface $serializer, Encacher $encacher)
     {
         $this->serializer = $serializer;
+        $this->encacher = $encacher;
     }
 
     /**
@@ -67,37 +71,25 @@ class PhoneController extends AbstractController
      *
      * @param Request $request
      * @param ParametersRepositoryPreparator $preparator
-     * @param Encacher $encacher
+     * @param MessageGenerator $messageGenerator
+     *
      * @return Response
      *
+     * @throws InvalidArgumentException
      * @throws NoResultException
      * @throws NonUniqueResultException
      */
-    public function index(Request $request, ParametersRepositoryPreparator $preparator, Encacher $encacher)
+    public function index(Request $request, ParametersRepositoryPreparator $preparator, MessageGenerator $messageGenerator)
     {
         $parameters = $preparator->prepareParametersPhone($request, $this->getParameter('paginator.maxResult'));
 
-        // if $parameters have message errors
-        if (isset($parameters['error'])) {
-            $data = [
-                'status' => Response::HTTP_BAD_REQUEST,
-                'message' => $parameters['error']
-            ];
+        $message = $messageGenerator->generate($parameters);
 
-            return new JsonResponse($data, Response::HTTP_BAD_REQUEST);
+        if ($message) {
+            return new JsonResponse($message['message'], $message['http_response']);
         }
 
-        if ((int)$parameters['count'] === 0) {
-            $data = [
-                'status' => Response::HTTP_OK,
-                'message' => "Aucun téléphone trouvé pour ces critères de recherche."
-            ];
-
-            return new JsonResponse($data, Response::HTTP_OK);
-        }
-
-
-        $data = $encacher->cacheIndex($request, $parameters);
+        $data = $this->encacher->cacheIndex($request, $parameters);
 
         return new Response($data, Response::HTTP_OK, ['Content-TYpe' => 'application/json']);
     }
@@ -119,13 +111,13 @@ class PhoneController extends AbstractController
      * )
      *
      * @param Phone $phone
-     * @param Encacher $encacher
      * @return Response
      *
+     * @throws InvalidArgumentException
      */
-    public function show(Phone $phone, Encacher $encacher)
+    public function show(Phone $phone)
     {
-        $data = $encacher->cacheShow($phone);
+        $data = $this->encacher->cacheShow($phone);
 
         return new Response($data, Response::HTTP_OK, ['Content-TYpe' => 'application/json']);
     }
