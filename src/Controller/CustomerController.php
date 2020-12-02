@@ -33,15 +33,13 @@ class CustomerController extends AbstractController
     private $serializer;
     private $validator;
     private $em;
-    private $encacher;
     private $messageGenerator;
 
-    public function __construct(SerializerInterface $serializer, ValidatorInterface $validator, EntityManagerInterface $em, Encacher $encacher, MessageGenerator $messageGenerator)
+    public function __construct(SerializerInterface $serializer, ValidatorInterface $validator, EntityManagerInterface $em, MessageGenerator $messageGenerator)
     {
         $this->serializer = $serializer;
         $this->validator = $validator;
         $this->em = $em;
-        $this->encacher = $encacher;
         $this->messageGenerator = $messageGenerator;
     }
 
@@ -69,13 +67,14 @@ class CustomerController extends AbstractController
      * @param Request $request
      * @param ParametersRepositoryPreparator $preparator
      *
+     * @param Encacher $encacher
      * @return JsonResponse|Response
      *
      * @throws InvalidArgumentException
      * @throws NoResultException
      * @throws NonUniqueResultException
      */
-    public function index(Request $request, ParametersRepositoryPreparator $preparator)
+    public function index(Request $request, ParametersRepositoryPreparator $preparator, Encacher $encacher)
     {
         $parameters = $preparator->prepareParametersCustomer($request, $this->getUser()->getId(), $this->getParameter('paginator.maxResult'));
 
@@ -84,7 +83,7 @@ class CustomerController extends AbstractController
             return new JsonResponse($message['message'], $message['http_response']);
         }
 
-        $data = $this->encacher->cacheIndex($request, $parameters, $this->getUser()->getId());
+        $data = $encacher->cacheIndex($request, $parameters, $this->getUser()->getId());
 
         return new Response($data, Response::HTTP_OK, [
             'Content-Type' => 'application/json'
@@ -111,10 +110,11 @@ class CustomerController extends AbstractController
      * @param int $id
      * @param CustomerRepository $customerRepository
      *
+     * @param Encacher $encacher
      * @return Response
      * @throws InvalidArgumentException
      */
-    public function show(int $id, CustomerRepository $customerRepository)
+    public function show(int $id, CustomerRepository $customerRepository, Encacher $encacher)
     {
         $customer = $customerRepository->findCustomerByUser($id, $this->getUser()->getId());
 
@@ -127,7 +127,7 @@ class CustomerController extends AbstractController
             return new JsonResponse($data, Response::HTTP_NOT_FOUND);
         }
 
-        $data = $this->encacher->cacheShow($customer);
+        $data = $encacher->cacheShow($customer);
 
         return new Response($data, Response::HTTP_OK, [
             'Content-Type' => 'application/json'
