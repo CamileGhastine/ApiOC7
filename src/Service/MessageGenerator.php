@@ -39,7 +39,7 @@ class MessageGenerator
                 'status' => Response::HTTP_NOT_FOUND,
                 'message' => isset($parameters['price'])
                     ? "Aucun téléphone trouvé pour ces critères de recherche."
-                    : "Ce client n'existe pas."
+                    : "Aucun client pour cet utilisateur."
             ];
             $message['http_response'] = Response::HTTP_OK;
 
