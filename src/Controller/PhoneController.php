@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use OpenApi\Annotations as OA;
 
 /**
  * Class PhoneController
@@ -34,11 +35,44 @@ class PhoneController extends AbstractController
     /**
      * @Route("/phones", name="list_phone", methods={"GET"})
      *
+     * @OA\Get(
+     *     path="/phones",
+     *     security={"bearer"},
+     *     tags={"Phone"},
+     *     @OA\Parameter(
+     *          name="page",
+     *          in="query",
+     *          example="/phones?page=2",
+     *          required = false,
+     *          @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Parameter(
+     *          name="brand",
+     *          in="query",
+     *          example="/phones?brand=samsung",
+     *          required = false,
+     *          @OA\Schema(type="string"),
+     *     ),
+     *     @OA\Parameter(
+     *          name="price",
+     *          in="query",
+     *          description="Syntaxe : /phones?price=[Xmin, Xmax] ou ?price=[Xmin]",
+     *     example="/phones?price=[500,1000]",
+     *          required = false,
+     *          @OA\Schema(type="string")
+     *     ),
+     *     @OA\Response(
+     *          response="200",
+     *          description="Liste de téléphones mobiles",
+     *          @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/PhonesList"))
+     *     )
+     * )
+     *
      * @param Request $request
      * @param PhoneRepository $phoneRepository
      * @param ParametersRepositoryPreparator $preparator
-     *
      * @param DataPaginator $dataPaginator
+     *
      * @return Response
      *
      * @throws NoResultException
@@ -78,6 +112,19 @@ class PhoneController extends AbstractController
 
     /**
      * @Route("/phones/{id<\d+>}", name="show_phone", methods={"GET"})
+     *
+     * @OA\Get(
+     *     path="/phones/{id}",
+     *     security={"bearer"},
+     *     tags={"Phone"},
+     *     @OA\Parameter(ref="#/components/parameters/id"),
+     *     @OA\Response(
+     *          response="200",
+     *          description="Détails du téléphone",
+     *          @OA\JsonContent(ref="#/components/schemas/Phone")
+     *     ),
+     *     @OA\Response(response="404", ref="#/components/responses/NotFound")
+     * )
      *
      * @param Phone $phone
      *

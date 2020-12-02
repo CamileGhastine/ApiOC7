@@ -1,12 +1,12 @@
-GET : /api/phones : return all phones
+GET : /api/phones : return first page of all phones
 
-    parameter "page" : pagination with 5 phones per page
+    parameter "page" : pagination with 3 phones per page
     - GET : /api/phones?page=X (X is a number upper than 0) : return the page X of all phones
     - (tips) GET : /api/phones?page : return the first page of all phones
 
 
     parameter "brand" :
-    - GET : /api/phones?brand=Samsung : return all Samsung phones
+    - GET : /api/phones?brand=Samsung : return Samsung phones
 
     parameter "price" :
     - GET : /api/phones?price=[Xmin, Xmax] (Xmin is the minimum price and Xmax the maximum price) : return all phone with a price between Xmin and Xmax
@@ -14,17 +14,17 @@ GET : /api/phones : return all phones
     - GET : /api/phones?price=[0, Xmax](Xmax is the maximum price) : return all phone with a price lower than Xmax
 
     You can combine 2 or 3 parameters together
-    - GET : /api/phones?brand='Samsung'&page=2 : return the second page of Samsung phones
-    - GET : /api/phones?brand='Samsung'&page=1&price=[800, 1000] : return the first page of Samsung phones with a price between 800€ and 1000€
+    - GET : /api/phones?brand=Samsung&page=2 : return the second page of Samsung phones
+    - GET : /api/phones?brand=Samsung&page=2&price=[800, 1000] : return the second page of Samsung phones with a price between 800€ and 1000€
 
 
 GET : /api/phones/{id} : Return Details of the phone with the id={id}
 
 
 GET : /api/customers :
-    - GET : /api/customers : return all customers
+    - GET : /api/customers : return first page of all customers
 
-    parameter "page" : pagination with 5 customer per page
+    parameter "page" : pagination with 3 customer per page
     - GET : /api/customers?page=X (X is a number upper than 0) : return the page X of all customers
     - (tips) GET : /customers/phones?page : return the first page of all customers
 
@@ -53,8 +53,3 @@ PUT : /api/customers/{id} : update the customer with the id={id} that you have s
 
 
 DELETE : /api/customers/{id} : delete the customer with the id={id}
-
-
-
-
-

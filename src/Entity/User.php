@@ -9,10 +9,18 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use OpenApi\Annotations as OA;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
+ *
  * @UniqueEntity("username", message="Ce nom d'utilisateur est déjà utilisé !")
+ *
+ * @OA\Schema(
+ *     schema="User",
+ *     @OA\Property(type="string", property="username"),
+ *     @OA\Property(type="string", property="password"),
+ * )
  */
 class User implements UserInterface
 {
@@ -20,11 +28,14 @@ class User implements UserInterface
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     *
+     * @var int
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=180, unique=true)
+     *
      * @Assert\NotBlank(message= "Le champs username ne peut pas être vide.")
      * @Assert\Regex("/^\w+/", message="Le champs username n'a pas le bon format.")
      * @Assert\Length(
@@ -34,24 +45,31 @@ class User implements UserInterface
      *      maxMessage = "Le champs username doit comporter au plus {{ limit }} charactères",
      *      allowEmptyString = false
      * )
+     *
+     * @var string
      */
     private $username;
 
     /**
      * @ORM\Column(type="json")
+     *
+     * @var array
      */
     private $roles = [];
 
     /**
-     * @var string The hashed password
      * @ORM\Column(type="string")
+     *
      * @Assert\NotBlank(message= "Le mot de passe ne peut pas être vide.")
-//     * @Assert\Regex("/(?=.*\d)(?=.*[A-Z])(?=.*[a-z])/", message="Le champs password doit comporter au moins 6 caractères dont une majuscule, une minuscule et un chiffre.")
+     *
+     * @var string The hashed password
      */
     private $password;
 
     /**
      * @ORM\OneToMany(targetEntity=Customer::class, mappedBy="user", orphanRemoval=true)
+     *
+     * @var ArrayCollection
      */
     private $customers;
 

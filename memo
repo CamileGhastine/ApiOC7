@@ -1,4 +1,4 @@
-Créer un clef SSL (la doc de LexikJWTAuthenticationBundle):
+Créer un clef SSL (doc de LexikJWTAuthenticationBundle):
 
 - Ouvrir la console GitBash (qui simule un environement linux)
 - Se placer à la racine du projet et créer un repertoire :
@@ -15,4 +15,12 @@ Le test ne fonctionne pas et le token n'est pas généré (problème de certific
 Résolution : Je suis passé par le serveur dev de symfony pour générer un certicificat SSl valide avec la commande : symfony server:ca:install
 
 Rq: si git bash ne fonctionne pas pour la création des clefs, passer par ubuntu
+
+
+DOC SWAGGER
+Téléacharger sawgger-ui et placer le constenu du dossier dist dans public/swagger.
+Modifier le fichier index.html pour lui dire de charger le fichier swagger.json
+créer le fichier json générant la doc avec :
+ ./vendor/bin/openapi --format json --output ./public/swagger/swagger.json ./swagger/swagger.php src
+ voir la doc dans le navigateur : https://127.0.0.1:8000/swagger/
 

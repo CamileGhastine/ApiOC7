@@ -19,6 +19,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use OpenApi\Annotations as OA;
 
 /**
  * Class CustomerController
@@ -42,6 +43,24 @@ class CustomerController extends AbstractController
 
     /**
      * @Route("/customers", name="list_customer", methods={"GET"})
+     *
+     * @OA\Get(
+     *     path="/customers",
+     *     security={"bearer"},
+     *     tags={"Customer"},
+     *     @OA\Parameter(
+     *          name="page",
+     *          in="query",
+     *          example="/customers?page=2",
+     *          required = false,
+     *          @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *          response="200",
+     *          description="Liste de clients",
+     *          @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/CustomersList"))
+     *     )
+     * )
      *
      * @param Request $request
      * @param CustomerRepository $customerRepository
@@ -91,6 +110,20 @@ class CustomerController extends AbstractController
     /**
      * @Route("/customers/{id<\d+>}", name="show_customer", methods={"GET"})
      *
+     * @OA\Get(
+     *     path="/customers/{id}",
+     *     security={"bearer"},
+     *     tags={"Customer"},
+     *     @OA\Parameter(ref="#/components/parameters/id"),
+     *     @OA\Response(
+     *          response="200",
+     *          description="Informations client",
+     *          @OA\JsonContent(ref="#/components/schemas/Customer")
+     *     ),
+     *     @OA\Response(response="404", ref="#/components/responses/NotFound")
+
+     * )
+     *
      * @param int $id
      * @param CustomerRepository $customerRepository
      *
@@ -118,6 +151,27 @@ class CustomerController extends AbstractController
 
     /**
      * @Route("/customers", name="add_customer", methods={"POST"})
+     *
+     * @OA\Post(
+     *     path="/customers",
+     *     security={"bearer"},
+     *     tags={"Customer"},
+     *     @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(
+     *               required={"email", "firstname", "lastName", "adress", "postCode", "city"},
+     *               ref="#/components/schemas/CustomerEdit"
+     *          )
+     *     ),
+     *     @OA\Response(
+     *          response="200",
+     *          description="Création d'un client",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Le client a été ajouté avec succès !")
+     *          )
+     *     ),
+     *     @OA\Response(response="404", ref="#/components/responses/NotFound")
+     * )
      *
      * @param Request $request
      *
@@ -157,6 +211,25 @@ class CustomerController extends AbstractController
 
     /**
      * @Route("/customers/{id<\d+>}", name="update_customer", methods={"PUT"})
+     *
+     * @OA\Put(
+     *     path="/customers/{id}",
+     *     security={"bearer"},
+     *     tags={"Customer"},
+     *     @OA\RequestBody(
+     *          required=true,
+     *          @OA\JsonContent(ref="#/components/schemas/CustomerEdit")
+     *     ),
+     *     @OA\Parameter(ref="#/components/parameters/id"),
+     *     @OA\Response(
+     *          response="200",
+     *          description="Modification des informations client",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Le client a été modifié avec succès !")
+     *          )
+     *     ),
+     *     @OA\Response(response="404", ref="#/components/responses/NotFound")
+     * )
      *
      * @param Customer $customer
      * @param Request $request
@@ -205,6 +278,21 @@ class CustomerController extends AbstractController
 
     /**
      * @Route("/customers/{id<\d+>}", name="delete_customer", methods={"DELETE"})
+     *
+     * @OA\Delete(
+     *     path="/customers/{id}",
+     *     security={"bearer"},
+     *     tags={"Customer"},
+     *     @OA\Parameter(ref="#/components/parameters/id"),
+     *     @OA\Response(
+     *          response="200",
+     *          description="Supression d'un client",
+     *          @OA\JsonContent(
+     *              @OA\Property(property="message", type="string", example="Le client a été supprimé avec succès !")
+     *          )
+     *     ),
+     *     @OA\Response(response="404", ref="#/components/responses/NotFound")
+     * )
      *
      * @param Customer $customer
      *
