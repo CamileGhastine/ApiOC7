@@ -8,6 +8,7 @@ use App\Repository\PhoneRepository;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
 use Psr\Cache\InvalidArgumentException;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 
@@ -41,10 +42,13 @@ class Encacher
      */
     public function cacheShow($entity)
     {
+        if ($entity===[]) {
+            return "[]";
+        }
+
         $entity = is_array($entity) ? $entity[0] : $entity;
 
         $cacheName = str_replace("App\\Entity\\","",get_class($entity)).$entity->getId();
-
         return $this->cache->get($cacheName, function(ItemInterface $item) use ($entity) {
             $item->expiresAfter(3600);
 
@@ -61,7 +65,7 @@ class Encacher
      *
      * @throws InvalidArgumentException
      */
-    public function cacheIndex($request, $parameters, ?int $userId = null)
+    public function cacheIndex(Request $request, $parameters, ?int $userId = null)
     {
         $class = $userId ? 'customer' : 'phone';
         $cacheName = $class.$request->query->get('page').$request->query->get('brand').$request->query->get('price');

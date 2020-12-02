@@ -34,13 +34,15 @@ class CustomerController extends AbstractController
     private $validator;
     private $em;
     private $encacher;
+    private $messageGenerator;
 
-    public function __construct(SerializerInterface $serializer, ValidatorInterface $validator, EntityManagerInterface $em, Encacher $encacher)
+    public function __construct(SerializerInterface $serializer, ValidatorInterface $validator, EntityManagerInterface $em, Encacher $encacher, MessageGenerator $messageGenerator)
     {
         $this->serializer = $serializer;
         $this->validator = $validator;
         $this->em = $em;
         $this->encacher = $encacher;
+        $this->messageGenerator = $messageGenerator;
     }
 
     /**
@@ -67,18 +69,17 @@ class CustomerController extends AbstractController
      * @param Request $request
      * @param ParametersRepositoryPreparator $preparator
      *
-     * @param MessageGenerator $messageGenerator
      * @return JsonResponse|Response
      *
      * @throws InvalidArgumentException
      * @throws NoResultException
      * @throws NonUniqueResultException
      */
-    public function index(Request $request, ParametersRepositoryPreparator $preparator, MessageGenerator $messageGenerator)
+    public function index(Request $request, ParametersRepositoryPreparator $preparator)
     {
         $parameters = $preparator->prepareParametersCustomer($request, $this->getUser()->getId(), $this->getParameter('paginator.maxResult'));
 
-        $message = $messageGenerator->generateIndex($parameters);
+        $message = $this->messageGenerator->generateForIndex($parameters);
         if ($message) {
             return new JsonResponse($message['message'], $message['http_response']);
         }
@@ -117,16 +118,16 @@ class CustomerController extends AbstractController
     {
         $customer = $customerRepository->findCustomerByUser($id, $this->getUser()->getId());
 
-        $data = $this->encacher->cacheShow($customer);
-
-        if ($data === "[]") {
+        if ($customer === []) {
             $data = [
-                'status' => Response::HTTP_OK,
-                'message' => "Ce client n'existe pas pour cet utilisateur."
+                'status' => Response::HTTP_NOT_FOUND,
+                'message' => "Ce client n'existe pas."
             ];
 
-            return new JsonResponse($data, Response::HTTP_OK);
+            return new JsonResponse($data, Response::HTTP_NOT_FOUND);
         }
+
+        $data = $this->encacher->cacheShow($customer);
 
         return new Response($data, Response::HTTP_OK, [
             'Content-Type' => 'application/json'
@@ -162,20 +163,15 @@ class CustomerController extends AbstractController
      */
     public function new(Request $request)
     {
-        if ($request->getContent() === "") {
-            $data = [
-                'status' => Response::HTTP_BAD_REQUEST,
-                'message' => "Le courriel, le nom, le prénom, l'adresse, le code postal et la ville au format json sont obligatoires !"
-            ];
-
-            return new JsonResponse($data, Response::HTTP_BAD_REQUEST);
+        $message = $this->messageGenerator->generateForEdit($request);
+        if($message) {
+            return new JsonResponse($message['message'], $message['http_response']);
         }
 
         $customer = $this->serializer->deserialize($request->getContent(), Customer::class, 'json');
         $customer->setUser($this->getUser());
 
         $errors = $this->validator->validate($customer);
-
         if (count($errors)) {
             $data = $this->serializer->serialize($errors, 'json');
 
@@ -187,9 +183,7 @@ class CustomerController extends AbstractController
         $this->em->persist($customer);
         $this->em->flush();
 
-        return new Response('Le client a été ajouté avec succès !', Response::HTTP_CREATED, [
-            'Content-Type' => 'application/json'
-        ]);
+        return new JsonResponse('Le client a été ajouté avec succès !', Response::HTTP_CREATED);
     }
 
     /**
@@ -222,28 +216,14 @@ class CustomerController extends AbstractController
      */
     public function update(Request $request,Customer $customer, SetCustomer $setCustomer)
     {
-        if ($request->getContent() === "") {
-            $data = [
-                'status' => Response::HTTP_BAD_REQUEST,
-                'message' => "Aucune information entrée pour la modification."
-            ];
-
-            return new JsonResponse($data, Response::HTTP_BAD_REQUEST);
-        }
-
-        if ($customer->getUser() !== $this->getUser()) {
-            $data = [
-                'status' => Response::HTTP_OK,
-                'message' => "Ce client n'existe pas pour cet utilisateur."
-            ];
-
-            return new JsonResponse($data, Response::HTTP_OK);
+        $message = $this->messageGenerator->generateForEdit($request, $customer, $this->getUser());
+        if($message) {
+            return new JsonResponse($message['message'], $message['http_response']);
         }
 
         $setCustomer->set($request, $customer);
 
         $errors = $this->validator->validate($customer);
-
         if (count($errors)) {
             $data = $this->serializer->serialize($errors, 'json');
 
@@ -254,9 +234,7 @@ class CustomerController extends AbstractController
 
         $this->em->flush();
 
-        return new Response('Le client a été modifié avec succès !', Response::HTTP_CREATED, [
-            'Content-Type' => 'application/json'
-        ]);
+        return new JsonResponse('Le client a été modifié avec succès !', Response::HTTP_CREATED);
     }
 
     /**
@@ -296,8 +274,6 @@ class CustomerController extends AbstractController
 
         $this->em->flush();
 
-        return new Response('Le client a été supprimé avec succès !', Response::HTTP_RESET_CONTENT, [
-            'Content-Type' => 'application/json'
-        ]);
+        return new JsonResponse('Le client a été supprimé avec succès !', Response::HTTP_RESET_CONTENT);
     }
 }
