@@ -104,7 +104,7 @@ class PhoneController extends AbstractController
             return new JsonResponse($data, Response::HTTP_OK);
         }
 
-        $data = $cache->get('cachePhones', function (ItemInterface $item) use ($parameters, $dataPaginator, $phoneRepository){
+        $data = $cache->get('cachePhonesList', function (ItemInterface $item) use ($parameters, $dataPaginator, $phoneRepository){
             $item->expiresAfter(3600);
             $data = $dataPaginator->paginate($phoneRepository->findPhonePaginated($parameters)->getIterator(), $parameters);
 
@@ -136,9 +136,13 @@ class PhoneController extends AbstractController
      *
      * @return Response
      */
-    public function show(Phone $phone)
+    public function show(Phone $phone, CacheInterface $cache)
     {
-        $data = $this->serializer->serialize($phone, 'json', SerializationContext::create()->setGroups(['detail']));
+        $data = $cache->get('cachePhone', function(ItemInterface $item) use ($phone) {
+            $item->expiresAfter(3600);
+
+            return $this->serializer->serialize($phone, 'json', SerializationContext::create()->setGroups(['detail']));
+        });
 
         return new Response($data, Response::HTTP_OK, ['Content-TYpe' => 'application/json']);
     }

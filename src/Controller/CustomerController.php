@@ -20,6 +20,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use OpenApi\Annotations as OA;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\CacheInterface;
 
 /**
  * Class CustomerController
@@ -73,7 +75,7 @@ class CustomerController extends AbstractController
      * @throws NonUniqueResultException
      * @throws Exception
      */
-    public function index(Request $request, CustomerRepository $customerRepository, ParametersRepositoryPreparator $preparator, DataPaginator $dataPaginator)
+    public function index(Request $request, CustomerRepository $customerRepository, ParametersRepositoryPreparator $preparator, DataPaginator $dataPaginator, CacheInterface $cache)
     {
         $parameters = $preparator->prepareParametersCustomer($request, $this->getUser()->getId(), $this->getParameter('paginator.maxResult'));
 
@@ -96,10 +98,12 @@ class CustomerController extends AbstractController
             return new JsonResponse($data, Response::HTTP_OK);
         }
 
-        $data = $dataPaginator->paginate($customerRepository->findCustomersPaginated($parameters, $this->getUser()->getId())->getIterator(), $parameters);
+        $data = $cache->get('cacheCustomersList', function(ItemInterface $item) use ($parameters, $dataPaginator, $customerRepository) {
+            $item->expiresAfter(3600);
+            $data = $dataPaginator->paginate($customerRepository->findCustomersPaginated($parameters, $this->getUser()->getId())->getIterator(), $parameters);
 
-        $data = $this->serializer->serialize($data, 'json', SerializationContext::create()->setGroups(['list']));
-
+            return $this->serializer->serialize($data, 'json', SerializationContext::create()->setGroups(['list']));
+        });
 
         return new Response($data, Response::HTTP_OK, [
             'Content-Type' => 'application/json'
@@ -129,11 +133,15 @@ class CustomerController extends AbstractController
      *
      * @return Response
      */
-    public function show(int $id, CustomerRepository $customerRepository)
+    public function show(int $id, CustomerRepository $customerRepository, CacheInterface $cache)
     {
         $customer = $customerRepository->findCustomerByUser($id, $this->getUser()->getId());
 
-        $data = $this->serializer->serialize($customer, 'json', SerializationContext::create()->setGroups(['detail']));
+        $data = $cache->get('cacheCustomer', function(ItemInterface $item) use ($customer) {
+            $item->expiresAfter(3600);
+
+            return $this->serializer->serialize($customer, 'json', SerializationContext::create()->setGroups(['detail']));
+        });
 
         if ($data === "[]") {
             $data = [
