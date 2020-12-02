@@ -387,12 +387,55 @@
                     },
                     "lastName": {
                         "type": "string"
+                    },
+                    "links": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "self": {
+                                    "type": "string"
+                                },
+                                "create": {
+                                    "type": "string"
+                                },
+                                "update": {
+                                    "type": "string"
+                                },
+                                "delete": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    },
+                    "embedded": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "phones": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        }
                     }
                 },
                 "type": "object"
             },
             "Customer": {
                 "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "email": {
+                        "type": "string"
+                    },
+                    "firstName": {
+                        "type": "string"
+                    },
+                    "lastName": {
+                        "type": "string"
+                    },
                     "adress": {
                         "type": "string"
                     },
@@ -407,14 +450,40 @@
                         "items": {
                             "$ref": "#/components/schemas/Phone"
                         }
+                    },
+                    "links": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "self": {
+                                    "type": "string"
+                                },
+                                "create": {
+                                    "type": "string"
+                                },
+                                "update": {
+                                    "type": "string"
+                                },
+                                "delete": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    },
+                    "embedded": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "phones": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        }
                     }
                 },
-                "type": "object",
-                "allOf": [
-                    {
-                        "$ref": "#/components/schemas/CustomersList"
-                    }
-                ]
+                "type": "object"
             },
             "CustomerEdit": {
                 "properties": {
@@ -452,22 +521,51 @@
                     },
                     "price": {
                         "type": "integer"
+                    },
+                    "links": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "self": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        }
                     }
                 },
                 "type": "object"
             },
             "Phone": {
                 "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "brand": {
+                        "type": "string"
+                    },
+                    "model": {
+                        "type": "string"
+                    },
+                    "price": {
+                        "type": "integer"
+                    },
+                    "links": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "self": {
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    },
                     "description": {
                         "type": "string"
                     }
                 },
-                "type": "object",
-                "allOf": [
-                    {
-                        "$ref": "#/components/schemas/PhonesList"
-                    }
-                ]
+                "type": "object"
             },
             "User": {
                 "properties": {

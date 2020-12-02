@@ -32,12 +32,28 @@ use OpenApi\Annotations as OA;
  *     @OA\Property(type="string", property="brand"),
  *     @OA\Property(type="string", property="model"),
  *     @OA\Property(type="integer", property="price"),
+ *     @OA\Property(
+ *          type="array",
+ *          @OA\Items(
+ *               @OA\Property(type="string", property="self"),
+ *          ),
+ *          property="links"),
  * )
  * @OA\Schema(
  *     schema="Phone",
- *     allOf={@OA\Schema(ref="#/components/schemas/PhonesList")},
+ *     @OA\Property(type="integer", property="id"),
+ *     @OA\Property(type="string", property="brand"),
+ *     @OA\Property(type="string", property="model"),
+ *     @OA\Property(type="integer", property="price"),
+ *     @OA\Property(
+ *          type="array",
+ *          @OA\Items(
+ *               @OA\Property(type="string", property="self"),
+ *          ),
+ *          property="links"),
  *     @OA\Property(type="string", property="description")
  * )
+
  */
 class Phone
 {

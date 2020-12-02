@@ -76,14 +76,47 @@ use OpenApi\Annotations as OA;
  *     @OA\Property(type="string", property="email"),
  *     @OA\Property(type="string", property="firstName"),
  *     @OA\Property(type="string", property="lastName"),
+ *     @OA\Property(
+ *          type="array",
+ *          @OA\Items(
+ *               @OA\Property(type="string", property="self"),
+ *               @OA\Property(type="string", property="create"),
+ *               @OA\Property(type="string", property="update"),
+ *               @OA\Property(type="string", property="delete"),
+ *          ),
+ *          property="links"),
+ *     @OA\Property(
+ *          type="array",
+ *          @OA\Items(
+ *               @OA\Property(type="string", property="phones"),
+ *          ),
+ *          property="embedded"),
  * )
  * @OA\Schema(
  *     schema="Customer",
- *     allOf={@OA\Schema(ref="#/components/schemas/CustomersList")},
+ *     @OA\Property(type="integer", property="id"),
+ *     @OA\Property(type="string", property="email"),
+ *     @OA\Property(type="string", property="firstName"),
+ *     @OA\Property(type="string", property="lastName"),
  *     @OA\Property(type="string", property="adress"),
  *     @OA\Property(type="integer", property="postCode"),
  *     @OA\Property(type="string", property="city"),
  *     @OA\Property(type="array", @OA\Items(ref="#/components/schemas/Phone"),  property="phones"),
+ *     @OA\Property(
+ *          type="array",
+ *          @OA\Items(
+ *               @OA\Property(type="string", property="self"),
+ *               @OA\Property(type="string", property="create"),
+ *               @OA\Property(type="string", property="update"),
+ *               @OA\Property(type="string", property="delete"),
+ *          ),
+ *          property="links"),
+ *     @OA\Property(
+ *          type="array",
+ *          @OA\Items(
+ *               @OA\Property(type="string", property="phones"),
+ *          ),
+ *          property="embedded"),
  * )
  * @OA\Schema(
  *     schema="CustomerEdit",
