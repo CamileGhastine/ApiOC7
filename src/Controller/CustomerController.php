@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Customer;
 use App\Repository\CustomerRepository;
 use App\Service\Encacher;
+use App\Service\MessageGenerator;
 use App\Service\ParametersRepositoryPreparator;
 use App\Service\SetCustomer;
 use Doctrine\ORM\EntityManagerInterface;
@@ -32,12 +33,14 @@ class CustomerController extends AbstractController
     private $serializer;
     private $validator;
     private $em;
+    private $encacher;
 
-    public function __construct(SerializerInterface $serializer, ValidatorInterface $validator, EntityManagerInterface $em)
+    public function __construct(SerializerInterface $serializer, ValidatorInterface $validator, EntityManagerInterface $em, Encacher $encacher)
     {
         $this->serializer = $serializer;
         $this->validator = $validator;
         $this->em = $em;
+        $this->encacher = $encacher;
     }
 
     /**
@@ -64,36 +67,23 @@ class CustomerController extends AbstractController
      * @param Request $request
      * @param ParametersRepositoryPreparator $preparator
      *
-     * @param Encacher $encacher
+     * @param MessageGenerator $messageGenerator
      * @return JsonResponse|Response
      *
+     * @throws InvalidArgumentException
      * @throws NoResultException
-     * @throws NonUniqueResultException|InvalidArgumentException
+     * @throws NonUniqueResultException
      */
-    public function index(Request $request, ParametersRepositoryPreparator $preparator, Encacher $encacher)
+    public function index(Request $request, ParametersRepositoryPreparator $preparator, MessageGenerator $messageGenerator)
     {
         $parameters = $preparator->prepareParametersCustomer($request, $this->getUser()->getId(), $this->getParameter('paginator.maxResult'));
 
-        // if $page have message error
-        if (isset($parameters['error'])) {
-            $data = [
-                'status' => Response::HTTP_BAD_REQUEST,
-                'message' => $parameters['error']
-            ];
-
-            return new JsonResponse($data, Response::HTTP_BAD_REQUEST);
+        $message = $messageGenerator->generateIndex($parameters);
+        if ($message) {
+            return new JsonResponse($message['message'], $message['http_response']);
         }
 
-        if ((int)$parameters['count'] === 0) {
-            $data = [
-                'status' => Response::HTTP_OK,
-                'message' => "Aucun client pour cet utilisateur."
-            ];
-
-            return new JsonResponse($data, Response::HTTP_OK);
-        }
-
-        $data = $encacher->cacheIndex($request, $parameters, $this->getUser()->getId());
+        $data = $this->encacher->cacheIndex($request, $parameters, $this->getUser()->getId());
 
         return new Response($data, Response::HTTP_OK, [
             'Content-Type' => 'application/json'
@@ -120,15 +110,14 @@ class CustomerController extends AbstractController
      * @param int $id
      * @param CustomerRepository $customerRepository
      *
-     * @param Encacher $encacher
      * @return Response
      * @throws InvalidArgumentException
      */
-    public function show(int $id, CustomerRepository $customerRepository, Encacher $encacher)
+    public function show(int $id, CustomerRepository $customerRepository)
     {
         $customer = $customerRepository->findCustomerByUser($id, $this->getUser()->getId());
 
-        $data = $encacher->cacheShow($customer);
+        $data = $this->encacher->cacheShow($customer);
 
         if ($data === "[]") {
             $data = [
@@ -169,7 +158,6 @@ class CustomerController extends AbstractController
      * )
      *
      * @param Request $request
-     *
      * @return Response
      */
     public function new(Request $request)
@@ -226,13 +214,13 @@ class CustomerController extends AbstractController
      *     @OA\Response(response="404", ref="#/components/responses/NotFound")
      * )
      *
-     * @param Customer $customer
      * @param Request $request
+     * @param Customer $customer
      * @param SetCustomer $setCustomer
      *
      * @return Response
      */
-    public function update(Customer $customer, Request $request, SetCustomer $setCustomer)
+    public function update(Request $request,Customer $customer, SetCustomer $setCustomer)
     {
         if ($request->getContent() === "") {
             $data = [

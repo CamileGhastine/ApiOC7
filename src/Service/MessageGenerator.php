@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class MessageGenerator
 {
-    public function generate($parameters)
+    public function generateIndex($parameters)
     {
         // if $parameters have message errors
         if (isset($parameters['error'])) {
@@ -23,9 +23,12 @@ class MessageGenerator
 
         // No resource found
         if ((int)$parameters['count'] === 0) {
+
             $message['message'] = [
                 'status' => Response::HTTP_OK,
-                'mesnnsage' => "Aucun téléphone trouvé pour ces critères de recherche."
+                'message' => isset($parameters['price'])
+                    ? "Aucun téléphone trouvé pour ces critères de recherche."
+                    : "Aucun client pour cet utilisateur."
             ];
             $message['http_response'] = Response::HTTP_OK;
 

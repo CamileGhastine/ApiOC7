@@ -83,8 +83,7 @@ class PhoneController extends AbstractController
     {
         $parameters = $preparator->prepareParametersPhone($request, $this->getParameter('paginator.maxResult'));
 
-        $message = $messageGenerator->generate($parameters);
-
+        $message = $messageGenerator->generateIndex($parameters);
         if ($message) {
             return new JsonResponse($message['message'], $message['http_response']);
         }
