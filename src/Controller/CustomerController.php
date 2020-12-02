@@ -98,7 +98,9 @@ class CustomerController extends AbstractController
             return new JsonResponse($data, Response::HTTP_OK);
         }
 
-        $data = $cache->get('cacheCustomersList', function(ItemInterface $item) use ($parameters, $dataPaginator, $customerRepository) {
+        $cacheName = 'cacheCustomersList'.$request->query->get('page');
+
+        $data = $cache->get($cacheName, function(ItemInterface $item) use ($parameters, $dataPaginator, $customerRepository) {
             $item->expiresAfter(3600);
             $data = $dataPaginator->paginate($customerRepository->findCustomersPaginated($parameters, $this->getUser()->getId())->getIterator(), $parameters);
 

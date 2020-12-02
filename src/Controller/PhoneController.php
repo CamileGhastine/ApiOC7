@@ -104,7 +104,9 @@ class PhoneController extends AbstractController
             return new JsonResponse($data, Response::HTTP_OK);
         }
 
-        $data = $cache->get('cachePhonesList', function (ItemInterface $item) use ($parameters, $dataPaginator, $phoneRepository){
+        $cacheName = 'cachePhonesList'.$request->query->get('page').$request->query->get('brand').$request->query->get('price');
+
+        $data = $cache->get($cacheName, function (ItemInterface $item) use ($parameters, $dataPaginator, $phoneRepository){
             $item->expiresAfter(3600);
             $data = $dataPaginator->paginate($phoneRepository->findPhonePaginated($parameters)->getIterator(), $parameters);
 
