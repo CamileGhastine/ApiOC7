@@ -17,6 +17,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use OpenApi\Annotations as OA;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 
 /**
  * Class PhoneController
@@ -79,7 +81,7 @@ class PhoneController extends AbstractController
      * @throws NonUniqueResultException
      * @throws Exception
      */
-    public function index(Request $request, PhoneRepository $phoneRepository, ParametersRepositoryPreparator $preparator, DataPaginator $dataPaginator)
+    public function index(Request $request, PhoneRepository $phoneRepository, ParametersRepositoryPreparator $preparator, DataPaginator $dataPaginator, CacheInterface $cache)
     {
         $parameters = $preparator->prepareParametersPhone($request, $this->getParameter('paginator.maxResult'));
 
@@ -102,9 +104,13 @@ class PhoneController extends AbstractController
             return new JsonResponse($data, Response::HTTP_OK);
         }
 
-        $data = $dataPaginator->paginate($phoneRepository->findPhonePaginated($parameters)->getIterator(), $parameters);
+        $data = $cache->get('cachePhones', function (ItemInterface $item) use ($parameters, $dataPaginator, $phoneRepository){
+            $item->expiresAfter(3600);
+            $data = $dataPaginator->paginate($phoneRepository->findPhonePaginated($parameters)->getIterator(), $parameters);
 
-        $data = $this->serializer->serialize($data, 'json', SerializationContext::create()->setGroups(['list']));
+            return $this->serializer->serialize($data, 'json', SerializationContext::create()->setGroups(['list']));
+        });
+
 
 
         return new Response($data, Response::HTTP_OK, ['Content-TYpe' => 'application/json']);
