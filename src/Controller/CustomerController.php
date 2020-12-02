@@ -4,15 +4,13 @@ namespace App\Controller;
 
 use App\Entity\Customer;
 use App\Repository\CustomerRepository;
-use App\Service\PaginationAdder;
+use App\Service\Encacher;
 use App\Service\ParametersRepositoryPreparator;
 use App\Service\SetCustomer;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
-use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
-use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -20,8 +18,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use OpenApi\Annotations as OA;
-use Symfony\Contracts\Cache\ItemInterface;
-use Symfony\Contracts\Cache\CacheInterface;
 
 /**
  * Class CustomerController
@@ -65,18 +61,15 @@ class CustomerController extends AbstractController
      * )
      *
      * @param Request $request
-     * @param CustomerRepository $customerRepository
      * @param ParametersRepositoryPreparator $preparator
      *
-     * @param PaginationAdder $PaginationAdder
-     * @param CacheInterface $cache
+     * @param Encacher $encacher
      * @return JsonResponse|Response
      *
-     * @throws InvalidArgumentException
      * @throws NoResultException
      * @throws NonUniqueResultException
      */
-    public function index(Request $request, CustomerRepository $customerRepository, ParametersRepositoryPreparator $preparator, PaginationAdder $PaginationAdder, CacheInterface $cache)
+    public function index(Request $request, ParametersRepositoryPreparator $preparator, Encacher $encacher)
     {
         $parameters = $preparator->prepareParametersCustomer($request, $this->getUser()->getId(), $this->getParameter('paginator.maxResult'));
 
@@ -99,14 +92,7 @@ class CustomerController extends AbstractController
             return new JsonResponse($data, Response::HTTP_OK);
         }
 
-        $cacheName = 'cacheCustomersList'.$request->query->get('page');
-
-        $data = $cache->get($cacheName, function(ItemInterface $item) use ($parameters, $PaginationAdder, $customerRepository) {
-            $item->expiresAfter(3600);
-            $data = $PaginationAdder->add($customerRepository->findCustomersPaginated($parameters, $this->getUser()->getId())->getIterator(), $parameters);
-
-            return $this->serializer->serialize($data, 'json', SerializationContext::create()->setGroups(['list']));
-        });
+        $data = $encacher->cacheIndex($request, $parameters, $this->getUser()->getId());
 
         return new Response($data, Response::HTTP_OK, [
             'Content-Type' => 'application/json'
@@ -133,20 +119,14 @@ class CustomerController extends AbstractController
      * @param int $id
      * @param CustomerRepository $customerRepository
      *
-     * @param CacheInterface $cache
+     * @param Encacher $encacher
      * @return Response
-     * @throws InvalidArgumentException
      */
-    public function show(int $id, CustomerRepository $customerRepository, CacheInterface $cache)
+    public function show(int $id, CustomerRepository $customerRepository, Encacher $encacher)
     {
         $customer = $customerRepository->findCustomerByUser($id, $this->getUser()->getId());
 
-        $cacheName = 'cacheCustomer'.$id;
-        $data = $cache->get($cacheName, function(ItemInterface $item) use ($customer) {
-            $item->expiresAfter(3600);
-
-            return $this->serializer->serialize($customer, 'json', SerializationContext::create()->setGroups(['detail']));
-        });
+        $data = $encacher->cacheShow($customer);
 
         if ($data === "[]") {
             $data = [
