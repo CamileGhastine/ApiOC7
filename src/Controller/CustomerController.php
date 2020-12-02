@@ -4,14 +4,12 @@ namespace App\Controller;
 
 use App\Entity\Customer;
 use App\Repository\CustomerRepository;
-use App\Service\DataPaginator;
+use App\Service\Encacher;
 use App\Service\ParametersRepositoryPreparator;
 use App\Service\SetCustomer;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
-use Exception;
-use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -63,17 +61,15 @@ class CustomerController extends AbstractController
      * )
      *
      * @param Request $request
-     * @param CustomerRepository $customerRepository
      * @param ParametersRepositoryPreparator $preparator
      *
-     * @param DataPaginator $dataPaginator
+     * @param Encacher $encacher
      * @return JsonResponse|Response
      *
      * @throws NoResultException
      * @throws NonUniqueResultException
-     * @throws Exception
      */
-    public function index(Request $request, CustomerRepository $customerRepository, ParametersRepositoryPreparator $preparator, DataPaginator $dataPaginator)
+    public function index(Request $request, ParametersRepositoryPreparator $preparator, Encacher $encacher)
     {
         $parameters = $preparator->prepareParametersCustomer($request, $this->getUser()->getId(), $this->getParameter('paginator.maxResult'));
 
@@ -96,10 +92,7 @@ class CustomerController extends AbstractController
             return new JsonResponse($data, Response::HTTP_OK);
         }
 
-        $data = $dataPaginator->paginate($customerRepository->findCustomersPaginated($parameters, $this->getUser()->getId())->getIterator(), $parameters);
-
-        $data = $this->serializer->serialize($data, 'json', SerializationContext::create()->setGroups(['list']));
-
+        $data = $encacher->cacheIndex($request, $parameters, $this->getUser()->getId());
 
         return new Response($data, Response::HTTP_OK, [
             'Content-Type' => 'application/json'
@@ -121,19 +114,19 @@ class CustomerController extends AbstractController
      *          @OA\JsonContent(ref="#/components/schemas/Customer")
      *     ),
      *     @OA\Response(response="404", ref="#/components/responses/NotFound")
-
      * )
      *
      * @param int $id
      * @param CustomerRepository $customerRepository
      *
+     * @param Encacher $encacher
      * @return Response
      */
-    public function show(int $id, CustomerRepository $customerRepository)
+    public function show(int $id, CustomerRepository $customerRepository, Encacher $encacher)
     {
         $customer = $customerRepository->findCustomerByUser($id, $this->getUser()->getId());
 
-        $data = $this->serializer->serialize($customer, 'json', SerializationContext::create()->setGroups(['detail']));
+        $data = $encacher->cacheShow($customer);
 
         if ($data === "[]") {
             $data = [

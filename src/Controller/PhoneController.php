@@ -3,13 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\Phone;
-use App\Repository\PhoneRepository;
-use App\Service\DataPaginator;
+use App\Service\Encacher;
 use App\Service\ParametersRepositoryPreparator;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
-use Exception;
-use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -69,17 +66,14 @@ class PhoneController extends AbstractController
      * )
      *
      * @param Request $request
-     * @param PhoneRepository $phoneRepository
      * @param ParametersRepositoryPreparator $preparator
-     * @param DataPaginator $dataPaginator
-     *
+     * @param Encacher $encacher
      * @return Response
      *
      * @throws NoResultException
      * @throws NonUniqueResultException
-     * @throws Exception
      */
-    public function index(Request $request, PhoneRepository $phoneRepository, ParametersRepositoryPreparator $preparator, DataPaginator $dataPaginator)
+    public function index(Request $request, ParametersRepositoryPreparator $preparator, Encacher $encacher)
     {
         $parameters = $preparator->prepareParametersPhone($request, $this->getParameter('paginator.maxResult'));
 
@@ -102,10 +96,8 @@ class PhoneController extends AbstractController
             return new JsonResponse($data, Response::HTTP_OK);
         }
 
-        $data = $dataPaginator->paginate($phoneRepository->findPhonePaginated($parameters)->getIterator(), $parameters);
 
-        $data = $this->serializer->serialize($data, 'json', SerializationContext::create()->setGroups(['list']));
-
+        $data = $encacher->cacheIndex($request, $parameters);
 
         return new Response($data, Response::HTTP_OK, ['Content-TYpe' => 'application/json']);
     }
@@ -127,12 +119,13 @@ class PhoneController extends AbstractController
      * )
      *
      * @param Phone $phone
-     *
+     * @param Encacher $encacher
      * @return Response
+     *
      */
-    public function show(Phone $phone)
+    public function show(Phone $phone, Encacher $encacher)
     {
-        $data = $this->serializer->serialize($phone, 'json', SerializationContext::create()->setGroups(['detail']));
+        $data = $encacher->cacheShow($phone);
 
         return new Response($data, Response::HTTP_OK, ['Content-TYpe' => 'application/json']);
     }
