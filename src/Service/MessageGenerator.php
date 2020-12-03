@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class MessageGenerator
 {
+
     /**
      * @param $parameters
      *
@@ -81,4 +82,34 @@ class MessageGenerator
         return false;
     }
 
+    /**
+     * @param Request $request
+     * @param User $user
+     *
+     * @return bool
+     */
+    public function generateForRegister(Request $request, User $user)
+    {
+        if ($request->getContent() === "") {
+            $message['message'] = [
+                'status' => Response::HTTP_BAD_REQUEST,
+                'message' => "Les clefs username et password au format json sont obligatoires !"
+            ];
+            $message['http_response'] = Response::HTTP_BAD_REQUEST;
+
+            return $message;
+        }
+
+        if (!$user->getUsername() || !$user->getPassword()) {
+            $message['message'] = [
+                'status' => Response::HTTP_UNPROCESSABLE_ENTITY,
+                'message' => "Les clefs username et password au format json sont obligatoires !"
+            ];
+            $message['http_response'] = Response::HTTP_UNPROCESSABLE_ENTITY;
+
+            return $message;
+        }
+
+        return false;
+    }
 }

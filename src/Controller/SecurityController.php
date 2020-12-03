@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Service\MessageGenerator;
 use App\Service\SetUser;
 use Doctrine\ORM\EntityManagerInterface;
 use JMS\Serializer\SerializerInterface;
@@ -60,29 +61,17 @@ class SecurityController extends AbstractController
      *
      * @param Request $request
      * @param SetUser $setUser
+     * @param MessageGenerator $messageGenerator
      *
      * @return JsonResponse|Response
      */
-    public function register(Request $request, SetUser $setUser)
+    public function register(Request $request, SetUser $setUser, MessageGenerator $messageGenerator)
     {
-        if ($request->getContent() === "") {
-            $data = [
-                'status' => Response::HTTP_BAD_REQUEST,
-                'message' => "Les clefs username et password au format json sont obligatoires !"
-            ];
-
-            return new JsonResponse($data, Response::HTTP_BAD_REQUEST);
-        }
-
         $user = $this->serializer->deserialize($request->getContent(), User::class, 'json');
 
-        if (!$user->getUsername() || !$user->getPassword()) {
-            $data = [
-                'status' => Response::HTTP_UNPROCESSABLE_ENTITY,
-                'message' => 'Les clefs username et password sont obligatoires !'
-            ];
-
-            return new JsonResponse($data, Response::HTTP_UNPROCESSABLE_ENTITY, ['Content-Type' => 'application/json']);
+        $message = $messageGenerator->generateForRegister($request, $user);
+        if ($message) {
+            return new JsonResponse($message['message'], $message['http_response']);
         }
 
         $errors = $setUser->set($user);
