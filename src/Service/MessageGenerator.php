@@ -41,7 +41,7 @@ class MessageGenerator
                     ? "Aucun téléphone trouvé pour ces critères de recherche."
                     : "Aucun client pour cet utilisateur."
             ];
-            $message['http_response'] = Response::HTTP_OK;
+            $message['http_response'] = Response::HTTP_NOT_FOUND;
 
             return $message;
         }

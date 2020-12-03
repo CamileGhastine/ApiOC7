@@ -10,6 +10,7 @@ use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use JMS\Serializer\Exception\RuntimeException;
 
 class ExceptionSubscriber implements EventSubscriberInterface
 {
@@ -23,15 +24,15 @@ class ExceptionSubscriber implements EventSubscriberInterface
         if (!($exception instanceof NotFoundHttpException) &&
             !($exception instanceof ErrorException) &&
             !($exception instanceof MethodNotAllowedHttpException) &&
-            !($exception instanceof BadRequestHttpException)) {
+            !($exception instanceof BadRequestHttpException) &&
+            !($exception instanceof RuntimeException)) {
             return ;
         }
-
         if ($exception instanceof NotFoundHttpException) {
             $data = $this->getDataForNotFoundHttpException($exception);
         }
 
-        if ($exception instanceof ErrorException  || $exception instanceof MethodNotAllowedHttpException) {
+        if ($exception instanceof ErrorException  || $exception instanceof MethodNotAllowedHttpException || $exception instanceof RuntimeException) {
             $data = $this->getDataOtherException($exception);
         }
 
@@ -77,7 +78,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
      */
     private function getDataOtherException($exception)
     {
-        if ($exception instanceof ErrorException) {
+        if ($exception instanceof ErrorException || $exception instanceof RuntimeException) {
             return [
                 'status' => Response::HTTP_BAD_REQUEST,
                 'message' => 'Le format saisi n\'est pas un format json valide !'

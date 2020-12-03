@@ -263,11 +263,11 @@ class CustomerController extends AbstractController
     {
         if ($customer->getUser() !== $this->getUser()) {
             $data = [
-                'status' => Response::HTTP_OK,
+                'status' => Response::HTTP_NOT_FOUND,
                 'message' => "Ce client n'existe pas pour cet utilisateur."
             ];
 
-            return new JsonResponse($data, Response::HTTP_OK);
+            return new JsonResponse($data, Response::HTTP_NOT_FOUND);
         }
 
         $this->em->remove($customer);
