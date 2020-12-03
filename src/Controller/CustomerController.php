@@ -164,7 +164,7 @@ class CustomerController extends AbstractController
     public function new(Request $request)
     {
         $message = $this->messageGenerator->generateForEdit($request);
-        if($message) {
+        if ($message) {
             return new JsonResponse($message['message'], $message['http_response']);
         }
 
@@ -214,10 +214,10 @@ class CustomerController extends AbstractController
      *
      * @return Response
      */
-    public function update(Request $request,Customer $customer, SetCustomer $setCustomer)
+    public function update(Request $request, Customer $customer, SetCustomer $setCustomer)
     {
         $message = $this->messageGenerator->generateForEdit($request, $customer, $this->getUser());
-        if($message) {
+        if ($message) {
             return new JsonResponse($message['message'], $message['http_response']);
         }
 

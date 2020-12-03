@@ -48,8 +48,8 @@ class Encacher
 
         $entity = is_array($entity) ? $entity[0] : $entity;
 
-        $cacheName = str_replace("App\\Entity\\","",get_class($entity)).$entity->getId();
-        return $this->cache->get($cacheName, function(ItemInterface $item) use ($entity) {
+        $cacheName = str_replace("App\\Entity\\", "", get_class($entity)).$entity->getId();
+        return $this->cache->get($cacheName, function (ItemInterface $item) use ($entity) {
             $item->expiresAfter(3600);
 
             return $this->serializer->serialize($entity, 'json', SerializationContext::create()->setGroups(['detail']));
@@ -70,10 +70,10 @@ class Encacher
         $class = $userId ? 'customer' : 'phone';
         $cacheName = $class.$request->query->get('page').$request->query->get('brand').$request->query->get('price');
 
-         return $this->cache->get($cacheName, function (ItemInterface $item) use ($parameters, $userId){
+        return $this->cache->get($cacheName, function (ItemInterface $item) use ($parameters, $userId) {
             $item->expiresAfter(3600);
 
-            if(!$userId) {
+            if (!$userId) {
                 $data = $this->paginationAdder->add($this->phoneRepository->findPhonePaginated($parameters)->getIterator(), $parameters);
 
                 return $this->serializer->serialize($data, 'json', SerializationContext::create()->setGroups(['list']));

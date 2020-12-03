@@ -15,6 +15,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use OpenApi\Annotations as OA;
+
 /**
  * Class SecurityController
  *

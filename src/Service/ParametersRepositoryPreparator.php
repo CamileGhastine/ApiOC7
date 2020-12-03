@@ -130,7 +130,7 @@ class ParametersRepositoryPreparator
      */
     private function countAll(?string $brand, ?array $price, ?int $userId = null)
     {
-        if(isset($price) && count($price) === 1) {
+        if (isset($price) && count($price) === 1) {
             return 0;
         }
 
