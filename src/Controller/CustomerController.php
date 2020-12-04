@@ -31,14 +31,14 @@ use OpenApi\Annotations as OA;
 class CustomerController extends AbstractController
 {
     private $serializer;
-    private $validator;
+    private $encacher;
     private $em;
     private $messageGenerator;
 
-    public function __construct(SerializerInterface $serializer, ValidatorInterface $validator, EntityManagerInterface $em, MessageGenerator $messageGenerator)
+    public function __construct(SerializerInterface $serializer, Encacher $encacher, EntityManagerInterface $em, MessageGenerator $messageGenerator)
     {
         $this->serializer = $serializer;
-        $this->validator = $validator;
+        $this->encacher = $encacher;
         $this->em = $em;
         $this->messageGenerator = $messageGenerator;
     }
@@ -74,14 +74,13 @@ class CustomerController extends AbstractController
      * @param Request $request
      * @param ParametersRepositoryPreparator $preparator
      *
-     * @param Encacher $encacher
      * @return JsonResponse|Response
      *
      * @throws InvalidArgumentException
      * @throws NoResultException
      * @throws NonUniqueResultException
      */
-    public function index(Request $request, ParametersRepositoryPreparator $preparator, Encacher $encacher)
+    public function index(Request $request, ParametersRepositoryPreparator $preparator, CustomerRepository $customerRepository)
     {
         $parameters = $preparator->prepareParametersCustomer($request, $this->getUser()->getId(), $this->getParameter('paginator.maxResult'));
 
@@ -90,7 +89,7 @@ class CustomerController extends AbstractController
             return new JsonResponse($message['message'], $message['http_response']);
         }
 
-        $data = $encacher->cacheIndex($request, $parameters, $this->getUser()->getId());
+        $data = $this->encacher->cacheIndex($request, $parameters, $customerRepository, $this->getUser()->getId());
 
         return new Response($data, Response::HTTP_OK, [
             'Content-Type' => 'application/json'
@@ -117,11 +116,10 @@ class CustomerController extends AbstractController
      * @param int $id
      * @param CustomerRepository $customerRepository
      *
-     * @param Encacher $encacher
      * @return Response
      * @throws InvalidArgumentException
      */
-    public function show(int $id, CustomerRepository $customerRepository, Encacher $encacher)
+    public function show(int $id, CustomerRepository $customerRepository)
     {
         $customer = $customerRepository->findCustomerByUser($id, $this->getUser()->getId());
 
@@ -134,7 +132,7 @@ class CustomerController extends AbstractController
             return new JsonResponse($data, Response::HTTP_NOT_FOUND);
         }
 
-        $data = $encacher->cacheShow($customer);
+        $data = $this->encacher->cacheShow($customer);
 
         return new Response($data, Response::HTTP_OK, [
             'Content-Type' => 'application/json'
@@ -166,9 +164,10 @@ class CustomerController extends AbstractController
      * )
      *
      * @param Request $request
+     * @param ValidatorInterface $validator
      * @return Response
      */
-    public function new(Request $request)
+    public function new(Request $request, ValidatorInterface $validator)
     {
         $message = $this->messageGenerator->generateForEdit($request);
         if ($message) {
@@ -178,7 +177,7 @@ class CustomerController extends AbstractController
         $customer = $this->serializer->deserialize($request->getContent(), Customer::class, 'json');
         $customer->setUser($this->getUser());
 
-        $errors = $this->validator->validate($customer);
+        $errors = $validator->validate($customer);
         if (count($errors)) {
             $data = $this->serializer->serialize($errors, 'json');
 
@@ -189,6 +188,8 @@ class CustomerController extends AbstractController
 
         $this->em->persist($customer);
         $this->em->flush();
+
+        $this->encacher->Invalidate();
 
         return new JsonResponse('Le client a été ajouté avec succès !', Response::HTTP_CREATED);
     }
@@ -219,9 +220,10 @@ class CustomerController extends AbstractController
      * @param Customer $customer
      * @param SetCustomer $setCustomer
      *
+     * @param ValidatorInterface $validator
      * @return Response
      */
-    public function update(Request $request, Customer $customer, SetCustomer $setCustomer)
+    public function update(Request $request, Customer $customer, SetCustomer $setCustomer, ValidatorInterface $validator)
     {
         $message = $this->messageGenerator->generateForEdit($request, $customer, $this->getUser());
         if ($message) {
@@ -230,7 +232,7 @@ class CustomerController extends AbstractController
 
         $setCustomer->set($request, $customer);
 
-        $errors = $this->validator->validate($customer);
+        $errors = $validator->validate($customer);
         if (count($errors)) {
             $data = $this->serializer->serialize($errors, 'json');
 
@@ -240,6 +242,8 @@ class CustomerController extends AbstractController
         }
 
         $this->em->flush();
+
+        $this->encacher->Invalidate();
 
         return new JsonResponse('Le client a été modifié avec succès !', Response::HTTP_CREATED);
     }
@@ -280,6 +284,8 @@ class CustomerController extends AbstractController
         $this->em->remove($customer);
 
         $this->em->flush();
+
+        $this->encacher->Invalidate();
 
         return new JsonResponse('Le client a été supprimé avec succès !', Response::HTTP_RESET_CONTENT);
     }

@@ -11,6 +11,7 @@ use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
 /**
  * Class Encacher
@@ -23,14 +24,16 @@ class Encacher
     private $paginationAdder;
     private $phoneRepository;
     private $customerRepository;
+    private $cachePool;
 
-    public function __construct(SerializerInterface $serializer, CacheInterface $cache, PaginationAdder $paginationAdder, PhoneRepository $phoneRepository, CustomerRepository $customerRepository)
+    public function __construct(TagAwareCacheInterface $cachePool, SerializerInterface $serializer, CacheInterface $cache, PaginationAdder $paginationAdder, PhoneRepository $phoneRepository, CustomerRepository $customerRepository)
     {
         $this->serializer = $serializer;
         $this->cache = $cache;
         $this->paginationAdder = $paginationAdder;
         $this->phoneRepository = $phoneRepository;
         $this->customerRepository = $customerRepository;
+        $this->cachePool = $cachePool;
     }
 
     /**
@@ -65,23 +68,29 @@ class Encacher
      *
      * @throws InvalidArgumentException
      */
-    public function cacheIndex(Request $request, $parameters, ?int $userId = null)
+    public function cacheIndex(Request $request, $parameters, $repository, ?int $userId = null)
     {
         $class = $userId ? 'customer' : 'phone';
         $cacheName = $class.$request->query->get('page').$request->query->get('brand').$request->query->get('price');
 
-        return $this->cache->get($cacheName, function (ItemInterface $item) use ($parameters, $userId) {
+        return $this->cachePool->get($cacheName, function (ItemInterface $item) use ($parameters, $userId, $class, $repository) {
             $item->expiresAfter(3600);
+            $item->tag($class);
 
             if (!$userId) {
-                $data = $this->paginationAdder->add($this->phoneRepository->findPhonePaginated($parameters)->getIterator(), $parameters);
+                $data = $this->paginationAdder->add($repository->findPhonePaginated($parameters)->getIterator(), $parameters);
 
                 return $this->serializer->serialize($data, 'json', SerializationContext::create()->setGroups(['list']));
             }
 
-            $data = $this->paginationAdder->add($this->customerRepository->findCustomersPaginated($parameters, $userId)->getIterator(), $parameters);
+            $data = $this->paginationAdder->add($repository->findCustomersPaginated($parameters, $userId)->getIterator(), $parameters);
 
             return $this->serializer->serialize($data, 'json', SerializationContext::create()->setGroups(['list']));
         });
+    }
+
+    public function Invalidate()
+    {
+        $this->cachePool->invalidateTags(['customer']);
     }
 }

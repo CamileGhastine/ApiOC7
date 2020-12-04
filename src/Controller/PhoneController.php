@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Phone;
+use App\Repository\PhoneRepository;
 use App\Service\Encacher;
 use App\Service\MessageGenerator;
 use App\Service\ParametersRepositoryPreparator;
@@ -86,7 +87,7 @@ class PhoneController extends AbstractController
      * @throws NoResultException
      * @throws NonUniqueResultException
      */
-    public function index(Request $request, ParametersRepositoryPreparator $preparator, MessageGenerator $messageGenerator)
+    public function index(Request $request, ParametersRepositoryPreparator $preparator, MessageGenerator $messageGenerator, PhoneRepository $phoneRepository)
     {
         $parameters = $preparator->prepareParametersPhone($request, $this->getParameter('paginator.maxResult'));
 
@@ -95,7 +96,7 @@ class PhoneController extends AbstractController
             return new JsonResponse($message['message'], $message['http_response']);
         }
 
-        $data = $this->encacher->cacheIndex($request, $parameters);
+        $data = $this->encacher->cacheIndex($request, $parameters, $phoneRepository);
 
         return new Response($data, Response::HTTP_OK, ['Content-TYpe' => 'application/json']);
     }
