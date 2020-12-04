@@ -160,7 +160,7 @@ class Customer
      * @SerializedName("firstName")
      *
      * @Assert\NotBlank(message= "Le champs prénom ne peut pas être vide.")
-     * @Assert\Regex("/^[a-zA-Z_]([a-zA-Z_](\s|-)?)+[a-zA-Z_]+$/", message="Le champs prénom n'a pas le bon format ")
+     * @Assert\Regex("/^[A-Za-zÀ-ÖØ-öø-ÿ](['A-Za-zÀ-ÖØ-öø-ÿ-](\s)?)+[A-Za-zÀ-ÖØ-öø-ÿ]+$/", message="Le champs prénom n'a pas le bon format ")
      * @Assert\Length(
      *      min = 2,
      *      max = 50,
@@ -180,7 +180,7 @@ class Customer
      * @SerializedName("lastName")
      *
      * @Assert\NotBlank(message= "Le champs nom ne peut pas être vide.")
-     * @Assert\Regex("/^[a-zA-Z_]([a-zA-Z_](\s|-)?)+[a-zA-Z_]+$/", message="Le champs nom n'a pas le bon format ")
+     * @Assert\Regex("/^[A-Za-zÀ-ÖØ-öø-ÿ-]([A-Za-zÀ-ÖØ-öø-ÿ-](\s|-)?)+[A-Za-zÀ-ÖØ-öø-ÿ-]+$/", message="Le champs nom n'a pas le bon format ")
      * @Assert\Length(
      *      min = 2,
      *      max = 50,
@@ -260,7 +260,7 @@ class Customer
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="customers")
      * @ORM\JoinColumn(nullable=false)
      *
-     * @var ArrayCollection
+     * @var User
      */
     private $user;
 
