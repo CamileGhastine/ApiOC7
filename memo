@@ -21,6 +21,6 @@ DOC SWAGGER
 Téléacharger sawgger-ui et placer le constenu du dossier dist dans public/swagger.
 Modifier le fichier index.html pour lui dire de charger le fichier swagger.json
 créer le fichier json générant la doc avec :
- ./vendor/bin/openapi --format json --output ./public/swagger/swagger.json ./swagger/swagger.php src
+ ./vendor/bin/openapi --format json --output ./api/v1/doc/swagger.json ./swagger/swagger.php src
  voir la doc dans le navigateur : https://127.0.0.1:8000/swagger/
 
