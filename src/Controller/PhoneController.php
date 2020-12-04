@@ -66,6 +66,13 @@ class PhoneController extends AbstractController
      *          response="200",
      *          description="Liste de téléphones mobiles",
      *          @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/PhonesList"))
+     *     ),
+     *     @OA\Response(
+     *          response="404",
+     *          description="Aucun téléphone pour cette recherche",
+     *          @OA\JsonContent(
+     *               @OA\Property(property="message", type="string", example="Aucun téléphone ne correspond aux crtières de recherche.")
+     *          )
      *     )
      * )
      *

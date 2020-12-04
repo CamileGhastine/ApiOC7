@@ -41,6 +41,22 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "description": "Aucun client pour cet utilisateur",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Aucun client pour cet utilisateur."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -257,6 +273,22 @@
                                 }
                             }
                         }
+                    },
+                    "404": {
+                        "description": "Aucun téléphone pour cette recherche",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Aucun téléphone ne correspond aux crtières de recherche."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -331,6 +363,22 @@
                                 }
                             }
                         }
+                    },
+                    "422": {
+                        "description": "User mal formaté",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Le username et le mot de passe sont obligatoires."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -361,6 +409,22 @@
                                         "token": {
                                             "type": "string",
                                             "example": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2MDY4NTUyNzEsImV4cCI6MTYwNjg1ODg3MSwicm9sZXMiOlsiUk9MRV9VU0VSIl0sInVzZXJuYW1lIjoiQ2xpZW50LTEifQ.SVGKQhz-r9JLScuS3fzopa-oWKPDbv51ER9x_yILmvnLQcxX8DI2Yr75pR4iBR598GQtqkAYEsz1VO42CZICwXbgpibn9FrVzsxsyMm3AN4gJmlLaLVqoYL7aY1VSjPR5wMVoQQrKr9WqPBnGv4uo_CqzQiXByi8BBUYEtOg4pjcfNTQPnacjRwVa0eW4krgCJHKJfYX8v64oixk5pPUkHuHxJkdcQjqGzXQP5cnuS8jqhrOuEGVIKjqmLPfgXsPiMUXwfVigztzlF5-qpjAtKPFunkak15kh68Hu6Fif73UyXKK-aYqZ2_yMBlRsEpFav_AXtvFinpgZ2ZvmQXffWDe_f1Bm94ht_jYCz4zhr7n3UGRAsyyHAn7CmRopbG6ET4R-DVbGB4HHi9OMUeNTtSS02eUzPOhVNeVqzzh4mClapARvId1lbCcHuFjHuvRr-CMzE0nfkiHiRsXc-JHzHyAx9glnrOUre76-xUFH78NCm585gUv9HebCuI42n0neg_4XExDQ7gsRzaCNr-12JOrZowz66DyGw27QCrHyByRS1XKiVdrI2njwxbc0apkAAcsxBghzk9pDNcxYX69nfMK0TnePnD89kIZlBJz32i4TfSTdKB5tjc3ajiLGVKlukH1Oz1Q9H1gt6CXWcny7wpMXXgHRuumzkAMnnnxj0Q"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Token périmé ou invalide",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Le token est périmé ou invalide."
                                         }
                                     },
                                     "type": "object"

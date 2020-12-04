@@ -1,0 +1,9 @@
+Développeur d'application PHP/Symphony
+
+Projet 7 : BileMo
+
+Lien GitHub vers le projet :
+https://github.com/CamileGhastine/ApiOC7
+
+Lien vers Codeclimate : note A
+https://codeclimate.com/github/CamileGhastine/ApiOC7/badges

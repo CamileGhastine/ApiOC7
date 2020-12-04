@@ -31,5 +31,5 @@ LINKS
     Github : https://github.com/CamileGhastine/ApiOC7
 
 CODE CLIMAT : A
-    https://codeclimate.com/github/CamileGhastine/ApiOC7
+    https://codeclimate.com/github/CamileGhastine/ApiOC7/badges
     

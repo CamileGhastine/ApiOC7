@@ -61,6 +61,13 @@ class CustomerController extends AbstractController
      *          response="200",
      *          description="Liste de clients",
      *          @OA\JsonContent(type="array", @OA\Items(ref="#/components/schemas/CustomersList"))
+     *     ),
+     *     @OA\Response(
+     *          response="404",
+     *          description="Aucun client pour cet utilisateur",
+     *          @OA\JsonContent(
+     *               @OA\Property(property="message", type="string", example="Aucun client pour cet utilisateur.")
+     *          )
      *     )
      * )
      *
@@ -264,7 +271,7 @@ class CustomerController extends AbstractController
         if ($customer->getUser() !== $this->getUser()) {
             $data = [
                 'status' => Response::HTTP_NOT_FOUND,
-                'message' => "Ce client n'existe pas pour cet utilisateur."
+                'message' => "Ce client n'existe pas."
             ];
 
             return new JsonResponse($data, Response::HTTP_NOT_FOUND);
