@@ -81,6 +81,7 @@ class PhoneController extends AbstractController
      * @param ParametersRepositoryPreparator $preparator
      * @param MessageGenerator $messageGenerator
      *
+     * @param PhoneRepository $phoneRepository
      * @return Response
      *
      * @throws InvalidArgumentException

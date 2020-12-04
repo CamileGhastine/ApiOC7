@@ -74,6 +74,7 @@ class CustomerController extends AbstractController
      * @param Request $request
      * @param ParametersRepositoryPreparator $preparator
      *
+     * @param CustomerRepository $customerRepository
      * @return JsonResponse|Response
      *
      * @throws InvalidArgumentException

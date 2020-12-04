@@ -22,17 +22,13 @@ class Encacher
     private $serializer;
     private $cache;
     private $paginationAdder;
-    private $phoneRepository;
-    private $customerRepository;
     private $cachePool;
 
-    public function __construct(TagAwareCacheInterface $cachePool, SerializerInterface $serializer, CacheInterface $cache, PaginationAdder $paginationAdder, PhoneRepository $phoneRepository, CustomerRepository $customerRepository)
+    public function __construct(TagAwareCacheInterface $cachePool, SerializerInterface $serializer, CacheInterface $cache, PaginationAdder $paginationAdder)
     {
         $this->serializer = $serializer;
         $this->cache = $cache;
         $this->paginationAdder = $paginationAdder;
-        $this->phoneRepository = $phoneRepository;
-        $this->customerRepository = $customerRepository;
         $this->cachePool = $cachePool;
     }
 
@@ -60,8 +56,9 @@ class Encacher
     }
 
     /**
-     * @param $request
+     * @param Request $request
      * @param $parameters
+     * @param $repository
      * @param int|null $userId
      *
      * @return mixed
