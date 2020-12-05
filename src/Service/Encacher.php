@@ -3,13 +3,10 @@
 
 namespace App\Service;
 
-use App\Repository\CustomerRepository;
-use App\Repository\PhoneRepository;
 use JMS\Serializer\SerializationContext;
 use JMS\Serializer\SerializerInterface;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\Cache\TagAwareCacheInterface;
 
@@ -20,14 +17,12 @@ use Symfony\Contracts\Cache\TagAwareCacheInterface;
 class Encacher
 {
     private $serializer;
-    private $cache;
     private $paginationAdder;
     private $cachePool;
 
-    public function __construct(TagAwareCacheInterface $cachePool, SerializerInterface $serializer, CacheInterface $cache, PaginationAdder $paginationAdder)
+    public function __construct(TagAwareCacheInterface $cachePool, SerializerInterface $serializer, PaginationAdder $paginationAdder)
     {
         $this->serializer = $serializer;
-        $this->cache = $cache;
         $this->paginationAdder = $paginationAdder;
         $this->cachePool = $cachePool;
     }
@@ -46,10 +41,12 @@ class Encacher
         }
 
         $entity = is_array($entity) ? $entity[0] : $entity;
+        $class = lcfirst(str_replace("App\\Entity\\", "", get_class($entity)));
+        $cacheName = $class.$entity->getId();
 
-        $cacheName = str_replace("App\\Entity\\", "", get_class($entity)).$entity->getId();
-        return $this->cache->get($cacheName, function (ItemInterface $item) use ($entity) {
+        return $this->cachePool->get($cacheName, function (ItemInterface $item) use ($entity, $class) {
             $item->expiresAfter(3600);
+            $item->tag($class);
 
             return $this->serializer->serialize($entity, 'json', SerializationContext::create()->setGroups(['detail']));
         });
