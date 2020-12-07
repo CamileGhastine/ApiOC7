@@ -12,6 +12,8 @@ class DocumentationController extends AbstractController
      */
     public function index()
     {
-        return $this->redirect('https://127.0.0.1:8000/api/v1/doc/index.html');
+        return $this->render('documentation/index.html.twig', [
+            'controller_name' => 'DocumentationController',
+        ]);
     }
 }

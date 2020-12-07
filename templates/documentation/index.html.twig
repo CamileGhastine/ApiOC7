@@ -1,20 +1,58 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello DocumentationController!{% endblock %}
+{% block title %}BileMo{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" type="text/css" href="{{ asset("swagger/swagger-ui.css") }}" >
+    <link rel="icon" type="image/png" href="{{ asset("swagger/favicon-32x32.png") }}" sizes="32x32" />
+    <link rel="icon" type="image/png" href="{{ asset("swagger/favicon-16x16.png") }}" sizes="16x16" />
+    <style>
+        html
+        {
+            box-sizing: border-box;
+            overflow: -moz-scrollbars-vertical;
+            overflow-y: scroll;
+        }
 
+        *,
+        *:before,
+        *:after
+        {
+            box-sizing: inherit;
+        }
+
+        body
+        {
+            margin:0;
+            background: #fafafa;
+        }
+    </style>
+{% endblock %}
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+{% endblock %}
+{% block javascripts %}
+    <div id="swagger-ui"></div>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+    <script src="{{ asset("swagger/swagger-ui-bundle.js") }}" charset="UTF-8"> </script>
+    <script src="{{ asset("swagger/swagger-ui-standalone-preset.js") }}" charset="UTF-8"> </script>
+    <script>
+        window.onload = function() {
+            // Begin Swagger UI call region
+            const ui = SwaggerUIBundle({
+                url: "/api/v1/doc/swagger.json",
+                dom_id: '#swagger-ui',
+                deepLinking: true,
+                presets: [
+                    SwaggerUIBundle.presets.apis,
+                    SwaggerUIStandalonePreset
+                ],
+                plugins: [
+                    SwaggerUIBundle.plugins.DownloadUrl
+                ],
+                layout: "StandaloneLayout"
+            })
+            // End Swagger UI call region
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code><a href="{{ 'C:/camile/coding/Parcours Openclassroom/projet 7 - API Rest/ApiOC7/src/Controller/DocumentationController.php'|file_link(0) }}">src/Controller/DocumentationController.php</a></code></li>
-        <li>Your template at <code><a href="{{ 'C:/camile/coding/Parcours Openclassroom/projet 7 - API Rest/ApiOC7/templates/documentation/index.html.twig'|file_link(0) }}">templates/documentation/index.html.twig</a></code></li>
-    </ul>
-</div>
+            window.ui = ui
+        }
+    </script>
 {% endblock %}
