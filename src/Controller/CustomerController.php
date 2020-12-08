@@ -150,7 +150,7 @@ class CustomerController extends AbstractController
      *     @OA\RequestBody(
      *          required=true,
      *          @OA\JsonContent(
-     *               required={"email", "firstname", "lastName", "adress", "postCode", "city"},
+     *               required={"email", "firstname", "lastName", "address", "postCode", "city"},
      *               ref="#/components/schemas/CustomerEdit"
      *          )
      *     ),

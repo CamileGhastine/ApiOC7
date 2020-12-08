@@ -500,7 +500,7 @@
                     "lastName": {
                         "type": "string"
                     },
-                    "adress": {
+                    "address": {
                         "type": "string"
                     },
                     "postCode": {
@@ -560,7 +560,7 @@
                     "lastName": {
                         "type": "string"
                     },
-                    "adress": {
+                    "address": {
                         "type": "string"
                     },
                     "postCode": {

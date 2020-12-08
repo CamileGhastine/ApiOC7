@@ -98,7 +98,7 @@ use OpenApi\Annotations as OA;
  *     @OA\Property(type="string", property="email"),
  *     @OA\Property(type="string", property="firstName"),
  *     @OA\Property(type="string", property="lastName"),
- *     @OA\Property(type="string", property="adress"),
+ *     @OA\Property(type="string", property="address"),
  *     @OA\Property(type="integer", property="postCode"),
  *     @OA\Property(type="string", property="city"),
  *     @OA\Property(type="array", @OA\Items(ref="#/components/schemas/Phone"),  property="phones"),
@@ -123,7 +123,7 @@ use OpenApi\Annotations as OA;
  *     @OA\Property(type="string", property="email"),
  *     @OA\Property(type="string", property="firstName"),
  *     @OA\Property(type="string", property="lastName"),
- *     @OA\Property(type="string", property="adress"),
+ *     @OA\Property(type="string", property="address"),
  *     @OA\Property(type="integer", property="postCode"),
  *     @OA\Property(type="string", property="city"),
  * )
