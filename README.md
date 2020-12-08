@@ -2,7 +2,13 @@
 
 Develop an API REST with Symfony for openclassroom Project n°7 on the developer course PHP/Symfony.
 
-INSTALLATION
+VERSION :
+- Symfony : 5.1
+- PHP version : 7.2.5
+- MySQL version : 5.5.5-10.2.30-MariaDB
+- Composer : 6.1.4
+
+INSTALLATION :
 1) Open the console and choose a directory to install the project
 
 2) Download the project with the command :
@@ -20,16 +26,10 @@ INSTALLATION
 6) create the database and load fixtures with the command :
 `composer prepare`
 
+LINKS :
+Documentation : https://localhost/api/v1/doc
+ ![Alt text](./public/docApi.jpg?raw=true "Title") 
 
-VERSION
-    Symfony : 5.1
-    PHP version : 7.2.5
-    MySQL version : 5.5.5-10.2.30-MariaDB
-    Composer : 6.1.4
+Github : https://github.com/CamileGhastine/ApiOC7
 
-LINKS
-    Github : https://github.com/CamileGhastine/ApiOC7
-
-CODE CLIMAT : A
-    https://codeclimate.com/github/CamileGhastine/ApiOC7/badges
-    
+Code climat : https://codeclimate.com/github/CamileGhastine/ApiOC7/badges    (note A)
